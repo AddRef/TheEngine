@@ -43,3 +43,5 @@ Temporary Items
 .apdisk
 
 3rdparty/_unpack
+_result
+*.pyc

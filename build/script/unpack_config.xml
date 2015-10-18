@@ -1,10 +1,11 @@
 <config>
 	<common>
-		<bin2cpp dest_cache="disabled"/>
+		<bin2cpp/>
 		<glm/>
 		<gtest/>
 		<lua/>
 		<SDL2/>
+		<boost_1_59_0/>
 	</common>
 	<linux>
 		<boost_linux/>
