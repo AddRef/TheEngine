@@ -60,3 +60,11 @@ macro(update_compiler_settings)
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -WX")
   endif()
 endmacro()
+
+function(bin2cpp in_file out_file)
+    add_custom_command(
+        OUTPUT ${out_file}
+        COMMAND ${BIN2CPP} ${in_file} ${out_file}
+        DEPENDS ${in_file}
+    )
+endfunction()

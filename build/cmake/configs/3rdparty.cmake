@@ -1,9 +1,7 @@
-# General variables
-set(3RDPARTY_DIR ${ROOT}/3rdparty/_unpack)
 # Unpack 3rd party
 message("Unpacking 3rdparty")
 message("========================================================")
-set (UNPACK_COMMAND 'python ${BUILD_DIR}/python/unpack.py')
+set (UNPACK_COMMAND 'python ${BUILD_DIR}/python/unpack.py -i ${ROOT_DIR}/3rdparty -o ${3RDPARTY_DIR}')
 message(${UNPACK_COMMAND})
 execute_process(COMMAND ${UNPACK_COMMAND} 
 				RESULT_VARIABLE var 
