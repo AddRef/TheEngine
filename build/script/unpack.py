@@ -15,7 +15,7 @@ class Config:
     def __init__(self, unpack_config_name):
         self._filters = {}
         # Build list of files to unpack
-        tree = etree.parse('unpack_config.xml')
+        tree = etree.parse(unpack_config_name)
         # Find common section of filter file
         common_config = tree.find('common')
         # Find OS specific part of filter file
@@ -166,6 +166,7 @@ if __name__ == '__main__':
     parser.add_option('-o', '--output', dest='output', help='output directory', default='./_unpack')
     parser.add_option('-c', '--config', dest='config', help='configuration file containing packages to unpack', default='./unpack_config.xml')
     (options, args) = parser.parse_args()
+    print options
     config = Config(options.config)
     cache = Cache(os.path.join(options.output, 'file_cache'))
     unpacker = Unpacker(options.input, options.output, config, cache)
