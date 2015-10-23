@@ -43,11 +43,6 @@ class Config:
             return False
         return True
 
-    def needs_dest_caching(self, file_name):
-        if not file_name in self._filters or self._filters[file_name].dest_cache == 'disabled':
-            return False
-        return True
-
     def _process_config(self, config):
         for module in config:
             # Read attributes
@@ -88,8 +83,8 @@ class Unpacker:
     def _file_requires_unpack(self, input_file, output_dir, cache):
         if cache:
             output_dir = archive.get_output_path(input_file, output_dir)
-            input_file_changed = cache.has_changed(input_file)
-            output_dir_changed = os.path.exists(output_dir) and cache.has_changed(output_dir)
+            input_file_changed = cache.entry_has_changed(input_file)
+            output_dir_changed = os.path.exists(output_dir) and cache.entry_has_changed(output_dir)
             return input_file_changed or output_dir_changed
         return True
 
@@ -101,8 +96,8 @@ class Unpacker:
 
     def _update_cache(self, input_file, output_dir, cache):
         if cache:
-            cache.update_file(archive.get_output_path(input_file, output_dir))
-            cache.update_file(input_file)
+            cache.update_entry(archive.get_output_path(input_file, output_dir))
+            cache.update_entry(input_file)
             cache.flush()
 
     def _remove_file(self, path):
