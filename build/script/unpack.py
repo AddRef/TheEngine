@@ -1,14 +1,17 @@
 ﻿import archive
 import utils
+import file_cache
+import debug
 
-from os import listdir
-import os.path
+import sys
+import os
 import shutil
-import datetime
 import xml.etree.ElementTree as etree
 from sys import platform
 from optparse import OptionParser
 from collections import namedtuple
+
+g_log = debug.Log()
 
 class Config:
     """Filters list of files based on unpack_config.xml"""
@@ -27,7 +30,7 @@ class Config:
         elif platform == 'win32':
             config_name = 'windows'
         else:
-            print("Unsupported platform %s. Terminaring.") % platform
+            g_log.error("Unsupported platform %s. Terminaring." % platform)
             sys.exit(-1)
         os_specific_config = tree.find(config_name)
         # Process configs
@@ -53,121 +56,72 @@ class Config:
                 filter_entry.dest_cache = module.attrib['dest_cache']
             self._filters[module.tag] = filter_entry
 
+class Unpacker:
+    def __init__(self):
+        pass
 
-class Cache:
-    """Provices check if particular file has changed since last usage"""
-    def __init__(self, cache_file):
-        # Read file with timestamps of file modifications to check with
-        self._cache_file = cache_file
-        self._cache = self._load_cache(self._cache_file)
+    def unpack_dir(self, input_dir, output_dir, cache = None, config = None):
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        for input_file in os.listdir(input_dir):
+            name, __ = utils.splitext(input_file)
+            input_file = os.path.join(input_dir, input_file)
+            if not config or config.needs_process(name):
+                self.unpack_file(input_file, output_dir, cache)
 
-    def has_changed(self, file_name):
-        """Checks if file has been modified and updates cache otherwise"""
-        timestamp = self._get_file_timestamp(file_name)
-        # Do not process files/folders that havn't been modified
-        if file_name in self._cache:
-            if self._cache[file_name] == timestamp or self._cache[file_name] == 'disabled':
-                return False        
+    def unpack_file(self, input_file, output_dir, cache = None):
+        input_file = os.path.abspath(input_file)
+        output_dir = os.path.abspath(output_dir)
+        if not os.path.isfile(input_file):
+            g_log.debug("%s is not a file and has been skipped" % input_file)
+            return
+        if not archive.is_supported_archive(input_file):
+            g_log.error("Unsupported archive %s" % input_file)
+            return
+        if not self._file_requires_unpack(input_file, output_dir, cache):
+            g_log.info("Skipping file %s: it was already unpacked" % input_file)
+            return
+        self._unpack_file(input_file, output_dir)
+        self._update_cache(input_file, output_dir, cache)
+
+        
+    def _file_requires_unpack(self, input_file, output_dir, cache):
+        if cache:
+            output_dir = archive.get_output_path(input_file, output_dir)
+            input_file_changed = cache.has_changed(input_file)
+            output_dir_changed = os.path.exists(output_dir) and cache.has_changed(output_dir)
+            return input_file_changed or output_dir_changed
         return True
 
-    def update_file(self, file_name, disable_timestamp = False):
-        """Updates cache for specific file"""
-        if disable_timestamp:
-            timestamp = 'disabled'
-        else:
-            timestamp = self._get_file_timestamp(file_name)
-        self._cache[file_name] = timestamp
+    def _unpack_file(self, input_file, output_dir):
+        g_log.info("Extracting %s to %s..." % (input_file, output_dir))
+        self._remove_file(archive.get_output_path(input_file, output_dir))
+        archive.unpack(input_file, output_dir)
+        g_log.info("Extracting %s... DONE" % (input_file))                    
 
-    def discard_file(self, file_name):
-        """Removes file from cache"""
-        del self._cache[file_name]
-
-    def flush(self):
-        """Stores accumulated cache"""
-        self._store_cache(self._cache, self._cache_file)
-
-    def _get_file_timestamp(self, file_name):
-        t = os.path.getmtime(file_name)
-        timestamp = ('%s') % datetime.datetime.fromtimestamp(t)
-        timestamp = timestamp.strip()
-        return timestamp
-
-    def _load_cache(self, cache_file_name):
-        filters = {}
-        if os.path.exists(self._cache_file):
-            f = open(self._cache_file, 'r')
-            for line in f.readlines():
-                (file_name, file_creation_date) = line.split(',')
-                file_name = file_name.strip()
-                file_creation_date = file_creation_date.strip()
-                filters[file_name] = file_creation_date
-            f.close()
-        return filters
-
-    def _store_cache(self, filters, cache_file_name):
-        f = open(self._cache_file, 'w+')
-        for (file_name, file_creation_date) in filters.iteritems():
-            str = "%s,%s\n" % (file_name, file_creation_date)
-            f.write(str)
-        f.close()
-
-
-class Unpacker:
-    """Unpacks zip archives located in current folder"""
-    def __init__(self, input, output, config, cache):
-        self._path = input
-        # process destination folder
-        self._unpack_folder = output
-        if not os.path.exists(self._unpack_folder):
-            os.makedirs(self._unpack_folder)
-        self._unpack_config = config
-        self._files_cache = cache
-
-    def unpack(self):
-        """unpacks path set in class constructor"""
-        for f in listdir(self._path):
-            self._process_file(f)
-        self._files_cache.flush()
-
-    def _process_file(self, file_name):
-        full_file_path = os.path.abspath(os.path.join(self._path, file_name))
-        if (os.path.isfile(full_file_path)):
-            (name, ext) = utils.splitext(file_name)
-            if (archive.is_supported_archive(file_name) and self._unpack_config.needs_process(name)):
-                # check if zip has modified recently
-                zip_path = os.path.abspath(os.path.join(self._unpack_folder, name))
-                zip_exists = os.path.exists(zip_path)
-                # Check if either source zip or destination folder has changed
-                zip_changed = self._files_cache.has_changed(full_file_path)
-                unpack_zip_changed = zip_exists and self._files_cache.has_changed(zip_path)
-                if zip_changed or not zip_exists or unpack_zip_changed:
-                    print ("Extracting %s to %s...") % (full_file_path, self._unpack_folder)
-                    self._remove_file(zip_path)
-                    archive.unpack(full_file_path, self._unpack_folder)
-                    print ("Extracting %s... DONE") % (full_file_path)
-                else:
-                    print("[INFO]: Skipping file %s: it was already unpacked") % (file_name)
-                # update cache
-                if not self._unpack_config.needs_dest_caching(name):
-                    print "[WARNING]: Destination cache is disabled for file %s" % (file_name)
-                disable_timestamp = not self._unpack_config.needs_dest_caching(name)
-                self._files_cache.update_file(zip_path, disable_timestamp)
-                self._files_cache.update_file(full_file_path)
+    def _update_cache(self, input_file, output_dir, cache):
+        if cache:
+            cache.update_file(archive.get_output_path(input_file, output_dir))
+            cache.update_file(input_file)
+            cache.flush()
 
     def _remove_file(self, path):
-        """removes file or folder recursively"""
         if (os.path.exists(path)):
             shutil.rmtree(path, ignore_errors=True)
 
 
 if __name__ == '__main__':
+    g_log.enable(debug.LogType.Info, True)
+    g_log.enable(debug.LogType.Error, True)
+    g_log.enable(debug.LogType.Debug, True)
+
     parser = OptionParser()
     parser.add_option('-i', '--input', dest='input', help='input directory', default='.')
     parser.add_option('-o', '--output', dest='output', help='output directory', default='./_unpack')
     parser.add_option('-c', '--config', dest='config', help='configuration file containing packages to unpack', default='./unpack_config.xml')
     (options, args) = parser.parse_args()
-    print options
+    g_log.debug("unpack.py options: %s" % options)
     config = Config(options.config)
-    cache = Cache(os.path.join(options.output, 'file_cache'))
-    unpacker = Unpacker(options.input, options.output, config, cache)
-    unpacker.unpack()
+    cache = file_cache.Cache(os.path.join(options.output, 'file_cache'))
+    unpacker = Unpacker()
+    unpacker.unpack_dir(options.input, options.output, cache, config)
