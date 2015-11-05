@@ -7,32 +7,35 @@ import sys
 import os
 import shutil
 import xml.etree.ElementTree as etree
-from sys import platform
 from optparse import OptionParser
 from collections import namedtuple
 
 g_log = debug.Log()
+g_log.enable(debug.LogType.Info, True)
+g_log.enable(debug.LogType.Error, True)
+g_log.enable(debug.LogType.Debug, True)
 
-class Config:
+class UnpackConfig:
     """Filters list of files based on unpack_config.xml"""
     def __init__(self, unpack_config_name):
         self._filters = {}
         # Build list of files to unpack
         tree = etree.parse(unpack_config_name)
         # Find common section of filter file
-        common_config = tree.find('common')
+        unpack_config = tree.find('unpack_config')
+        common_config = unpack_config.find('common')
         # Find OS specific part of filter file
         config_name = ""
-        if platform == 'linux' or platform == 'linux2':
+        if utils.get_platform() == utils.Platform.Linux:
             config_name = 'linux'
-        elif platform == 'darwin':
+        elif utils.get_platform() == utils.Platform.OSX:
             config_name = 'mac'
-        elif platform == 'win32':
+        elif utils.get_platform() == utils.Platform.Windows:
             config_name = 'windows'
         else:
-            g_log.error("Unsupported platform %s. Terminaring." % platform)
+            g_log.error("Unsupported platform %s. Terminaring." % sys.platform)
             sys.exit(-1)
-        os_specific_config = tree.find(config_name)
+        os_specific_config = unpack_config.find(config_name)
         # Process configs
         self._process_config(common_config)
         self._process_config(os_specific_config)
@@ -106,17 +109,16 @@ class Unpacker:
 
 
 if __name__ == '__main__':
-    g_log.enable(debug.LogType.Info, True)
-    g_log.enable(debug.LogType.Error, True)
-    g_log.enable(debug.LogType.Debug, True)
-
     parser = OptionParser()
-    parser.add_option('-i', '--input', dest='input', help='input directory', default='.')
+    parser.add_option('-d', '--input', dest='input', help='input directory or file', default='.')
     parser.add_option('-o', '--output', dest='output', help='output directory', default='./_unpack')
     parser.add_option('-c', '--config', dest='config', help='configuration file containing packages to unpack', default='./unpack_config.xml')
     (options, args) = parser.parse_args()
     g_log.debug("unpack.py options: %s" % options)
-    config = Config(options.config)
     cache = file_cache.Cache(os.path.join(options.output, 'file_cache'))
     unpacker = Unpacker()
-    unpacker.unpack_dir(options.input, options.output, cache, config)
+    if os.path.isdir(options.input):
+        config = UnpackConfig(options.config)
+        unpacker.unpack_dir(options.input, options.output, cache, config)
+    elif os.path.isfile(options.input):
+        unpacker.unpack_file(options.input, options.output, cache)

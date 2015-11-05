@@ -5,6 +5,9 @@ import datetime
 from optparse import OptionParser
 
 g_log = debug.Log()
+g_log.enable(debug.LogType.Info, True)
+g_log.enable(debug.LogType.Error, True)
+g_log.enable(debug.LogType.Debug, True)
 
 class Cache:
     """Provices check if particular file or folder has changed since last usage"""
@@ -70,7 +73,7 @@ if __name__ == '__main__':
     parser.add_option('-u', '--update', dest='update_target', help='updates entry in cache')
     parser.add_option('-c', '--cache', dest='cache_file', help='cache location')
     (options, args) = parser.parse_args()
-    g_log.debug("unpack.py options: %s" % options)
+    g_log.debug("file_cache.py options: %s" % options)
     if options.update_target:
         if not options.cache_file:
             g_log.error("Cache file is not specified")

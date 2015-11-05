@@ -1,16 +1,25 @@
-<config>
-	<common>
-		<bin2cpp/>
-		<glm/>
-		<gtest/>
-		<lua/>
-		<SDL2/>
-		<easylogging/>
-	</common>
-	<linux>
-	</linux>
-	<windows>
-	</windows>
-	<mac>
-	</mac>
-</config>
+<root>
+	<unpack_config>
+		<common>
+			<bin2cpp/>
+			<glm/>
+			<gtest/>
+			<lua/>
+			<SDL2/>
+			<easylogging/>
+			<boost_1_59_0/>
+		</common>
+		<linux>
+		</linux>
+		<windows>
+		</windows>
+		<mac>
+		</mac>
+	</unpack_config>
+	<components_config>
+		<boost>
+			<log/>
+			<filesystem/>
+		</boost>
+	</components_config>
+</root>
