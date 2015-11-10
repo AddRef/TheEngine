@@ -2,9 +2,9 @@ cmake_minimum_required(VERSION 3.0.2)
 
 disable_warning_level()
 
-add_subdirectory(_unpack/gtest)
-add_subdirectory(_unpack/lua)
-add_subdirectory(_unpack/SDL2)
+add_subdirectory(${3RDPARTY_UNPACK_DIR}/gtest)
+add_subdirectory(${3RDPARTY_UNPACK_DIR}/lua)
+add_subdirectory(${3RDPARTY_UNPACK_DIR}/SDL2)
 
 set_property (TARGET gtest            PROPERTY FOLDER "3rdparty/gtest")
 set_property (TARGET lua              PROPERTY FOLDER "3rdparty/lua")

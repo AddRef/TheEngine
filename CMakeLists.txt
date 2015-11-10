@@ -4,7 +4,6 @@ project(TheGame)
 
 set (ROOT_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set (BUILD_DIR ${ROOT_DIR}/build)
-set (3RDPARTY_UNPACK_DIR ${ROOT_DIR}/3rdparty/_unpack)
 set (SRC_DIRECTORY ${ROOT_DIR}/src)
 
 include(${BUILD_DIR}/cmake/configs/global.cmake)

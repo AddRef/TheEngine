@@ -1,31 +1,37 @@
+include (${BUILD_DIR}/cmake/utils/install.cmake)
+
+if (WIN32)
+    set (3RDPARTY_UNPACK_DIR ${ROOT_DIR}/3rdparty/_unpack/windows)
+    set (BIN2CPP ${3RDPARTY_UNPACK_DIR}/bin2cpp/bin2cpp.exe)
+elseif(APPLE)
+    set (3RDPARTY_UNPACK_DIR ${ROOT_DIR}/3rdparty/_unpack/mac)
+    set (BIN2CPP ${3RDPARTY_UNPACK_DIR}/bin2cpp/bin2cpp_mac)
+else()
+    set (3RDPARTY_UNPACK_DIR ${ROOT_DIR}/3rdparty/_unpack/linux)
+    set (BIN2CPP ${3RDPARTY_UNPACK_DIR}/bin2cpp/bin2cpp)
+endif()
+set (BOOST_DIR ${3RDPARTY_UNPACK_DIR}/boost)
+
 # Unpack 3rd party
 option (ENABLE_BOOST OFF)
 message("Unpacking 3rdparty")
 message("========================================================")
-set (UNPACK_SCRIPT python ${BUILD_DIR}/script/unpack.py -i ${ROOT_DIR}/3rdparty -o ${3RDPARTY_UNPACK_DIR} -c ${BUILD_DIR}/script/unpack_config.xml)
-message("${UNPACK_SCRIPT}")
-execute_process(COMMAND ${UNPACK_SCRIPT}
-				RESULT_VARIABLE var 
-				ERROR_VARIABLE err
-				WORKING_DIRECTORY ${ROOT_DIR}/3rdparty/)
-if (var) 
-	message(${var})
-endif()
-if (err)
-	message(FATAL ${err})
+# Unpack list of archives specified by configuration file
+set (UNPACK_SCRIPT python ${BUILD_DIR}/script/unpack.py -i ${ROOT_DIR}/3rdparty -o ${3RDPARTY_UNPACK_DIR} -c ${BUILD_DIR}/build_config.xml)
+launch_process(UNPACK_SCRIPT ${ROOT_DIR}/3rdparty/)
+# Launch boost build if boost was unpacked (which happens only when boost archive has been updated)
+set (BOOST_SOURCE_DIR ${3RDPARTY_UNPACK_DIR}/boost_1_59_0)
+if (EXISTS ${BOOST_SOURCE_DIR})
+    set (BOOST_BUILD_SCRIPT python ${BUILD_DIR}/script/boost.py -b -i ${BOOST_SOURCE_DIR} -t ${BOOST_DIR}/include -l ${BOOST_DIR}/libs -c ${BUILD_DIR}/build_config.xml)
+    launch_process(BOOST_BUILD_SCRIPT ${ROOT_DIR}/3rdparty/)
+    # Add boost dir to file cache
+    set (CACHE_FILE ${3RDPARTY_UNPACK_DIR}/file_cache)
+    set (FILE_CACHE_SCRIPT python ${BUILD_DIR}/script/file_cache.py -u ${BOOST_DIR} -c ${CACHE_FILE})
+    launch_process(FILE_CACHE_SCRIPT ".")
+    # Remove boost source directory
+    file(REMOVE_RECURSE ${BOOST_SOURCE_DIR})
 endif()
 message("========================================================")
-
-if (WIN32)
-    set (BOOST_DIR ${3RDPARTY_DIR}/boost_windows)
-    set (BIN2CPP ${3RDPARTY_DIR}/bin2cpp/bin2cpp.exe)
-elseif(APPLE)
-    set (BOOST_DIR ${3RDPARTY_DIR}/boost_mac)
-    set (BIN2CPP ${3RDPARTY_DIR}/bin2cpp/bin2cpp_mac)
-else()
-    set (BOOST_DIR ${3RDPARTY_DIR}/boost_linux)
-    set (BIN2CPP ${3RDPARTY_DIR}/bin2cpp/bin2cpp)
-endif()
 
 # Boost config
 if (ENABLE_BOOST)

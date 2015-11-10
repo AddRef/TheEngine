@@ -1,0 +1,30 @@
+<root>
+	<!-- List of components to unpack from specified directory by unpack.py -->
+	<!-- Each component can have the following attributes: -->
+	<!-- 	cache_destination = [enabled(default), disabled] -->
+	<unpack_config>
+		<common>
+			<bin2cpp/>
+			<glm/>
+			<gtest/>
+			<lua/>
+			<SDL2/>
+			<easylogging/>
+			<boost_1_59_0 cache_destination='disabled'/>
+		</common>
+		<linux>
+		</linux>
+		<windows>
+		</windows>
+		<mac>
+		</mac>
+	</unpack_config>
+	<!-- Various setting for components, their meaning is based on component -->
+	<components_config>
+		<boost>
+			<!-- List of boost libraries to build by boost.py -->
+			<log/>
+			<filesystem/>
+		</boost>
+	</components_config>
+</root>

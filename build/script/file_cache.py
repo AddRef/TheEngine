@@ -20,15 +20,22 @@ class Cache:
         """Checks if file has been modified and updates cache otherwise"""
         timestamp = self._get_entry_timestamp(path)
         # Do not process files/folders that havn't been modified
-        if path in self._cache:
+        if self.entry_exists(path):
             if self._cache[path] == timestamp or self._cache[path] == 'disabled':
                 return False        
         return True
+
+    def entry_exists(self, path):
+        """Checks if specified entry exists"""
+        if path in self._cache:
+            return True
+        return False
 
     def update_entry(self, path, disable_timestamp = False):
         """Updates entry about specific file or folder"""
         if not os.path.exists(path):
             g_log.error("Path %s doesn't exist" % path)
+        path = os.path.abspath(path)
         if disable_timestamp:
             timestamp = 'disabled'
         else:
@@ -38,6 +45,9 @@ class Cache:
     def discard_entry(self, path):
         """Removes file from cache"""
         del self._cache[path]
+
+    def invalidate(self):
+        self._cache.clear()
 
     def flush(self):
         """Stores accumulated cache"""
@@ -81,3 +91,4 @@ if __name__ == '__main__':
             g_log.error("Cache file %s doesn't exist" % options.cache_file)
         cache = Cache(options.cache_file)
         cache.update_entry(options.update_target)
+        cache.flush()

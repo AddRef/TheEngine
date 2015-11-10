@@ -1,11 +1,14 @@
 # Contains utils for installation, download, unpack, etc.
-function (unpack file output_dir)
-      message(STATUS "Extracting file ${file}")
-      execute_process(COMMAND ${CMAKE_COMMAND} -E tar xfz ${file}
-                      WORKING_DIRECTORY ${output_dir}
-                      RESULT_VARIABLE Result
-                      )
-      if(NOT Result EQUAL "0")
-        message(FATAL_ERROR "Failed extracting file ${file}")
-      endif()
-endfunction()
+macro (launch_process exec_command working_directory)
+	message("${${exec_command}}")
+	execute_process(COMMAND ${${exec_command}}
+					RESULT_VARIABLE var 
+					ERROR_VARIABLE err
+					WORKING_DIRECTORY ${working_directory})
+	if (var) 
+		message(${var})
+	endif()
+	if (err)
+		message(FATAL ${err})
+	endif()
+endmacro()

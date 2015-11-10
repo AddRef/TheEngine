@@ -19,10 +19,11 @@ class UnpackConfigEntry:
 
 class UnpackConfig:
     """Filters list of files based on unpack_config.xml"""
-    def __init__(self, unpack_config_name):
+    def __init__(self, unpack_config_path):
         self._filters = {}
+        self._unpack_config_path = os.path.abspath(unpack_config_path)
         # Build list of files to unpack
-        tree = etree.parse(unpack_config_name)
+        tree = etree.parse(self._unpack_config_path)
         # Find common section of filter file
         unpack_config = tree.find('unpack_config')
         common_config = unpack_config.find('common')
@@ -41,6 +42,9 @@ class UnpackConfig:
         # Process configs
         self._process_config(common_config)
         self._process_config(os_specific_config)
+
+    def get_config_path(self):
+        return self._unpack_config_path
 
     def needs_process(self, file_name):
         # Do not process files that are missing in filter list
@@ -66,6 +70,12 @@ class Unpacker:
         pass
 
     def unpack_dir(self, input_dir, output_dir, cache=None, config=None):
+        config_path = config.get_config_path()
+        if cache and config and cache.entry_has_changed(config_path):
+            # if config has changes from last repack then we need to fully rerun unpack
+            cache.invalidate()
+        cache.update_entry(config_path)
+        
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)
         for input_file in os.listdir(input_dir):
