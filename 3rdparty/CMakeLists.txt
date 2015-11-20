@@ -15,4 +15,5 @@ if (SDL_STATIC)
 endif()
 
 set_target_properties(gtest PROPERTIES COMPILE_FLAGS -DGTEST_HAS_TR1_TUPLE=0)
+target_include_directories(SDL2 PUBLIC ${3RDPARTY_UNPACK_DIR}/SDL2/include)
 

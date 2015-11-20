@@ -1,0 +1,10 @@
+#include "easylogging++.h"
+
+#define ENABLE_THE_LOGGING START_EASYLOGGINGPP
+
+#define THE_LOG_TRACE()   LOG(TRACE)
+#define THE_LOG_DEBUG()   LOG(DEBUG)
+#define THE_LOG_INFO()    LOG(INFO)
+#define THE_LOG_WARNING() LOG(WARNING)
+#define THE_LOG_ERROR()   LOG(ERROR)
+#define THE_LOG_FATAL()   LOG(FATAL)
