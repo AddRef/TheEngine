@@ -1,6 +1,8 @@
 import debug
 import utils
 import process
+import build_config
+import shutil
 
 import os
 import sys
@@ -12,35 +14,26 @@ g_log.enable(debug.LogType.Info, True)
 g_log.enable(debug.LogType.Error, True)
 g_log.enable(debug.LogType.Debug, True)
 
-class BoostConfig:
-    """Filters list of files based on unpack_config.xml"""
-    def __init__(self, unpack_config_name):
-        self._filters = {}
-        tree = etree.parse(unpack_config_name)
-        components_config = tree.find('components_config')
-        boost_config = components_config.find('boost')
-        self._process_config(boost_config)
-
-    def get_modules_list(self):
-        return self._modules
-
-    def _process_config(self, config):
-        for module in config:
-            #build a list of modules to build
-            self._modules.append(module.tag)
-
-    _modules = []
-
 class Boost:
-    def __init__(self, boost_path):
+    def __init__(self, boost_path, config=None, remove_boost = False):
         boost_path = os.path.abspath(boost_path)
         if not os.path.exists(boost_path):
             g_log.error("Boost location %s doesn't exist" % boost_path)
             sys.exit(-1)
         self._platform = utils.get_platform()
         self._boost_path = boost_path
+        self._boost_path = remove_boost
+        self._config = config
+        self._process_config(config)
 
-    def build(self, config=None):
+    def __del__(self):
+        if self._remove_boost:
+            g_log.debug("Removing location: self._boost_path")
+            shutil.rmtree(self._boost_path, ignore_errors=True)
+
+    def build(self):
+        g_log.info("Building boost")
+        # override boost location if it's specified in config file
         if self._platform == utils.Platform.Linux or self._platform == utils.Platform.OSX:
             bootstrap_location = os.path.join(self._boost_path, 'bootstrap.sh')
         elif self._platform == utils.Platform.Windows:
@@ -52,9 +45,8 @@ class Boost:
         bootstrap.launch()
         bjam_location = os.path.join(self._boost_path, 'bjam')
         bjam_command_line = 'link=static runtime-link=static'
-        print config
-        if config:
-            for module in config.get_modules_list():
+        if self._config:
+            for module in self._config.get_modules_list():
                 bjam_command_line = bjam_command_line + " --with-" + module
         bjam = process.Process(executable=bjam_location, working_directory=self._boost_path, arguments=bjam_command_line)
         bjam.launch()
@@ -76,6 +68,22 @@ class Boost:
         libs_location = os.path.join(self._boost_path, 'stage/lib')
         utils.copy(libs_location, destination, wildcard)
 
+    def _process_config(self, config):
+        if not config:
+            return
+        if config.get_config().build_directory:
+            g_log.info("Boost build directory has been overridden by config file on: %s" % config.get_config().build_directory)
+            self._boost_path = config.get_config().build_directory
+        if config.get_config().remove_after_build:
+            g_log.info("Boost will be removed at the end if this script based on config file")
+            self._remove_boost = config.get_config().remove_after_build
+
+    _config = None
+    _boost_path = None
+    _remove_boost = False
+    _config = None
+
+
 
 if __name__ == '__main__':
     parser = OptionParser()
@@ -84,13 +92,14 @@ if __name__ == '__main__':
     parser.add_option('-b', '--build', dest='build', action='store_true', help='input boost directory')
     parser.add_option('-t', '--output_headers', dest='output_headers', help='destination for headers')
     parser.add_option('-l', '--output_libs', dest='output_libs', help='destination for built libraries')
+    parser.add_option('-r', '--remove_boost_on_exit', dest='remove_boost_on_exit', action='store_true', help='removes boost directory after this script finishes to work')
     (options, args) = parser.parse_args()
     g_log.debug("boost.py options: %s" % options)
-    boost = Boost(options.input)
     if (options.config):
-        config = BoostConfig(options.config)
+        config = build_config.BoostConfig(options.config)
+    boost = Boost(options.input, config, options.remove_boost_on_exit)
     if (options.build):
-        boost.build(config)
+        boost.build()
     if options.output_headers:
         boost.copy_headers(options.output_headers)
     if options.output_libs:

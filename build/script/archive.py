@@ -46,6 +46,5 @@ def _unzip(input_file, output_dir):
     zfile.close()
 
 def _untar(input_file, output_dir):
-    print "_untar"
     tfile = tarfile.open(input_file, 'r:bz2')
     tfile.extractall(output_dir)

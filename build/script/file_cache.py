@@ -22,7 +22,7 @@ class Cache:
         # Do not process files/folders that havn't been modified
         if self.entry_exists(path):
             if self._cache[path] == timestamp or self._cache[path] == 'disabled':
-                return False        
+                return False
         return True
 
     def entry_exists(self, path):

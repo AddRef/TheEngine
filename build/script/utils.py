@@ -38,7 +38,7 @@ def copy(source, destination, wildcard='*', recursive=True):
     g_log.debug("copy is called with source: %s, destination: %s, wildcard: %s, recursive: %s" 
                 % (source, destination, wildcard, recursive), debug.Verbose.Two)
     if not os.path.exists(source):
-        g_log.error("Source path doesn't exist: %s", source)
+        g_log.error("Source path doesn't exist: %s" % source)
         return False
     # Create destination directory in case of it's abscence when source is directory as well
     if not os.path.exists(destination) and os.path.isdir(source):

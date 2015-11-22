@@ -42,7 +42,7 @@ Network Trash Folder
 Temporary Items
 .apdisk
 
-3rdparty/_unpack
+_unpack
 _result
 _build
 *.pyc

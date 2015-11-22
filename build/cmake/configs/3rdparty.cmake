@@ -14,37 +14,21 @@ set (BOOST_DIR ${3RDPARTY_UNPACK_DIR}/boost)
 
 # Unpack 3rd party
 option (ENABLE_BOOST OFF)
-message("Unpacking 3rdparty")
 message("========================================================")
+message("THAT COULD TAKE SOME TIME. PLEASE BE PATIENT. IT"S ONE TIME ACTION.)
 # Unpack list of archives specified by configuration file
 set (UNPACK_SCRIPT python ${BUILD_DIR}/script/unpack.py -i ${ROOT_DIR}/3rdparty -o ${3RDPARTY_UNPACK_DIR} -c ${BUILD_DIR}/build_config.xml)
 launch_process(UNPACK_SCRIPT ${ROOT_DIR}/3rdparty/)
 # Launch boost build if boost was unpacked (which happens only when boost archive has been updated)
-set (BOOST_SOURCE_DIR ${3RDPARTY_UNPACK_DIR}/boost_1_59_0)
-if (WIN32)
-    get_filename_component(BOOST_SOURCE_DIR ${BOOST_SOURCE_DIR} ABSOLUTE)
-    string(LENGTH ${BOOST_SOURCE_DIR} BOOST_SOURCE_DIR_LENGTH)
-    if (BOOST_SOURCE_DIR_LENGTH GREATER 130)
-        set (MSG "\n The path to boost location (${BOOST_SOURCE_DIR}) is too long.\n")
-        set (MSG "${MSG}Switching to temporal folder")
-        message("${MSG")
-    endif()
-    set (BOOST_SOURCE_DIR $ENV{TEMP})
-    if not BOOST_SOURCE_DIR
-        set (BOOST_SOURCE_DIR $ENV{TMP})
-    endif()
-    message(FATAL_ERROR "Failed to get temporal folder location")
-endif()
-if (EXISTS ${BOOST_SOURCE_DIR})
-    set (BOOST_BUILD_SCRIPT python ${BUILD_DIR}/script/boost.py -b -i ${BOOST_SOURCE_DIR} -t ${BOOST_DIR}/include -l ${BOOST_DIR}/libs -c ${BUILD_DIR}/build_config.xml)
-    launch_process(BOOST_BUILD_SCRIPT ${ROOT_DIR}/3rdparty/)
-    # Add boost dir to file cache
-    set (CACHE_FILE ${3RDPARTY_UNPACK_DIR}/file_cache)
-    set (FILE_CACHE_SCRIPT python ${BUILD_DIR}/script/file_cache.py -u ${BOOST_DIR} -c ${CACHE_FILE})
-    launch_process(FILE_CACHE_SCRIPT ".")
-    # Remove boost source directory
-    file(REMOVE_RECURSE ${BOOST_SOURCE_DIR})
-endif()
+# At the end script will copy headers and libs and will remove boost directory
+set (BOOST_BUILD_SCRIPT python ${BUILD_DIR}/script/boost.py -b -r -t ${BOOST_DIR}/include -l ${BOOST_DIR}/libs -c ${BUILD_DIR}/build_config.xml)
+launch_process(BOOST_BUILD_SCRIPT ${ROOT_DIR}/3rdparty/)
+# Add boost dir to file cache
+set (CACHE_FILE ${3RDPARTY_UNPACK_DIR}/file_cache)
+set (FILE_CACHE_SCRIPT python ${BUILD_DIR}/script/file_cache.py -u ${BOOST_DIR} -c ${CACHE_FILE})
+launch_process(FILE_CACHE_SCRIPT ".")
+# Remove boost source directory
+file(REMOVE_RECURSE ${BOOST_SOURCE_DIR})
 message("========================================================")
 
 # Boost config
