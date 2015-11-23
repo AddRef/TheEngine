@@ -16,10 +16,10 @@ g_log.enable(debug.LogType.Debug, True)
 
 class Boost:
     def __init__(self, boost_path, config=None, remove_boost = False):
+        if not boost_path or not os.path.exists(boost_path):
+            g_log.warning("Boost location %s doesn't exist" % boost_path)
+            sys.exit(0)
         boost_path = os.path.abspath(boost_path)
-        if not os.path.exists(boost_path):
-            g_log.error("Boost location %s doesn't exist" % boost_path)
-            sys.exit(-1)
         self._platform = utils.get_platform()
         self._boost_path = boost_path
         self._boost_path = remove_boost

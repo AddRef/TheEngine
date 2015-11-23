@@ -15,7 +15,7 @@ set (BOOST_DIR ${3RDPARTY_UNPACK_DIR}/boost)
 # Unpack 3rd party
 option (ENABLE_BOOST OFF)
 message("========================================================")
-message("THAT COULD TAKE SOME TIME. PLEASE BE PATIENT. IT"S ONE TIME ACTION.)
+message("THAT COULD TAKE SOME TIME. PLEASE BE PATIENT. IT'S ONE TIME ACTION.")
 # Unpack list of archives specified by configuration file
 set (UNPACK_SCRIPT python ${BUILD_DIR}/script/unpack.py -i ${ROOT_DIR}/3rdparty -o ${3RDPARTY_UNPACK_DIR} -c ${BUILD_DIR}/build_config.xml)
 launch_process(UNPACK_SCRIPT ${ROOT_DIR}/3rdparty/)
@@ -27,8 +27,6 @@ launch_process(BOOST_BUILD_SCRIPT ${ROOT_DIR}/3rdparty/)
 set (CACHE_FILE ${3RDPARTY_UNPACK_DIR}/file_cache)
 set (FILE_CACHE_SCRIPT python ${BUILD_DIR}/script/file_cache.py -u ${BOOST_DIR} -c ${CACHE_FILE})
 launch_process(FILE_CACHE_SCRIPT ".")
-# Remove boost source directory
-file(REMOVE_RECURSE ${BOOST_SOURCE_DIR})
 message("========================================================")
 
 # Boost config
