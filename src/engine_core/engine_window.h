@@ -30,7 +30,6 @@ public:
     {
         Success,
         FailedToCreateWindow,
-        FailedToCreateContext
     };
     struct Desc
     {
@@ -48,8 +47,8 @@ public:
     void SetFullscreen(bool fullscreen);
     void SetTitle(const std::string& title);
     const Desc& GetDescription() const { return m_desc; }
-    void RegisterInputCallback(IWindowCallback* callbacks);
-    void UnregisterInputCallback(IWindowCallback* callbacks);
+    void RegisterInputCallback(IWindowCallback& callbacks);
+    void UnregisterInputCallback(IWindowCallback& callbacks);
     bool Process() const;
 private:
     static InputKey convertSdlCodeToExternal(uint32_t sdl_key);
@@ -58,7 +57,6 @@ private:
     bool m_opened = false;
 
     SDL_Window*     m_window;
-    SDL_GLContext   m_gl_context;
     std::set<IWindowCallback*> m_input_callbacks;
 };
 

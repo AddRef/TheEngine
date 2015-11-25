@@ -17,15 +17,12 @@ Window::Error Window::Open(const Desc& desc)
 #endif //WIN32
     m_window = SDL_CreateWindow(desc.title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, desc.width, desc.height, SDL_WINDOW_OPENGL);
     THE_ERROR_IF(!m_window, "Window creation failed: " << SDL_GetError(), return Error::FailedToCreateWindow);
-    m_gl_context = SDL_GL_CreateContext(m_window);
-    THE_ERROR_IF(!m_gl_context, "GL context creation failed:" << SDL_GetError(), return Error::FailedToCreateContext);
     SetFullscreen(desc.fullscreen);
     return Error::Success;
 }
 
 void Window::Close()
 {
-    SDL_GL_DeleteContext(m_gl_context);
     SDL_DestroyWindow(m_window);
     SDL_Quit();
 }
@@ -49,15 +46,15 @@ void Window::SetTitle(const std::string& title)
     SDL_SetWindowTitle(m_window, m_desc.title.c_str());
 }
 
-void Window::RegisterInputCallback(IWindowCallback* callback)
+void Window::RegisterInputCallback(IWindowCallback& callback)
 {
-    m_input_callbacks.insert(callback);
+    m_input_callbacks.insert(&callback);
 }
 
-void Window::UnregisterInputCallback(IWindowCallback* callback)
+void Window::UnregisterInputCallback(IWindowCallback& callback)
 {
     if (! m_input_callbacks.empty())
-        m_input_callbacks.erase(callback);
+        m_input_callbacks.erase(&callback);
 }
 
 bool Window::Process() const
