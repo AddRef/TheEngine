@@ -7,24 +7,25 @@ import shutil
 import os
 import sys
 from optparse import OptionParser
-import xml.etree.ElementTree as etree
 
 g_log = debug.Log()
 g_log.enable(debug.LogType.Info, True)
+g_log.enable(debug.LogType.Warning, True)
 g_log.enable(debug.LogType.Error, True)
 g_log.enable(debug.LogType.Debug, True)
 
 class Boost:
     def __init__(self, boost_path, config=None, remove_boost = False):
+        print 0
         if not boost_path or not os.path.exists(boost_path):
             g_log.warning("Boost location %s doesn't exist" % boost_path)
             sys.exit(0)
         boost_path = os.path.abspath(boost_path)
         self._platform = utils.get_platform()
         self._boost_path = boost_path
-        self._boost_path = remove_boost
-        self._config = config
-        self._process_config(config)
+        self._remove_boost = remove_boost
+        self._boost_config = config.get_module('boost_1_59_0')
+        self._process_config(self._boost_config)
 
     def __del__(self):
         if self._remove_boost:
@@ -44,10 +45,8 @@ class Boost:
         bootstrap = process.Process(executable=bootstrap_location, working_directory=self._boost_path)
         bootstrap.launch()
         bjam_location = os.path.join(self._boost_path, 'bjam')
-        bjam_command_line = 'link=static runtime-link=static'
-        if self._config:
-            for module in self._config.get_modules_list():
-                bjam_command_line = bjam_command_line + " --with-" + module
+        bjam_command_line = 'link=static runtime-link=static' + self._form_bjam_module_list(self._boost_config)
+        print bjam_command_line
         bjam = process.Process(executable=bjam_location, working_directory=self._boost_path, arguments=bjam_command_line)
         bjam.launch()
 
@@ -68,17 +67,32 @@ class Boost:
         libs_location = os.path.join(self._boost_path, 'stage/lib')
         utils.copy(libs_location, destination, wildcard)
 
-    def _process_config(self, config):
+    def _process_config(self, module):
         if not config:
             return
-        if config.get_config().build_directory:
-            g_log.info("Boost build directory has been overridden by config file on: %s" % config.get_config().build_directory)
-            self._boost_path = config.get_config().build_directory
-        if config.get_config().remove_after_build:
+        build_directory = module.get_attribute('build_directory')
+        remove_after_build = module.get_attribute('remove_after_build')
+        if build_directory:
+            g_log.info("Boost build directory has been overridden by config file on: %s" % build_directory.value)
+            self._boost_path = build_directory.value
+        if remove_after_build:
             g_log.info("Boost will be removed at the end if this script based on config file")
-            self._remove_boost = config.get_config().remove_after_build
+            self._remove_boost = remove_after_build
 
-    _config = None
+    def _form_bjam_module_list(self, module):
+        if not module:
+            return ""
+        if not module.get_attribute('build_components'):
+            return ""
+        components_string = module.get_attribute('build_components').value
+        component_strings = utils.split_string(components_string)
+        command_line = ''
+        for component in component_strings:
+            command_line = command_line + " --with-" + component
+        return command_line
+
+
+    _boost_config = None
     _boost_path = None
     _remove_boost = False
     _config = None
@@ -96,7 +110,7 @@ if __name__ == '__main__':
     (options, args) = parser.parse_args()
     g_log.debug("boost.py options: %s" % options)
     if (options.config):
-        config = build_config.BoostConfig(options.config)
+        config = build_config.BuildConfig(options.config)
     boost = Boost(options.input, config, options.remove_boost_on_exit)
     if (options.build):
         boost.build()

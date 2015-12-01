@@ -6,6 +6,7 @@ from optparse import OptionParser
 
 g_log = debug.Log()
 g_log.enable(debug.LogType.Info, True)
+g_log.enable(debug.LogType.Warning, True)
 g_log.enable(debug.LogType.Error, True)
 g_log.enable(debug.LogType.Debug, True)
 
@@ -18,6 +19,7 @@ class Cache:
 
     def entry_has_changed(self, path):
         """Checks if file has been modified and updates cache otherwise"""
+        path = os.path.abspath(path)
         timestamp = self._get_entry_timestamp(path)
         # Do not process files/folders that havn't been modified
         if self.entry_exists(path):
@@ -27,12 +29,14 @@ class Cache:
 
     def entry_exists(self, path):
         """Checks if specified entry exists"""
+        path = os.path.abspath(path)
         if path in self._cache:
             return True
         return False
 
     def update_entry(self, path, disable_timestamp = False):
         """Updates entry about specific file or folder"""
+        path = os.path.abspath(path)
         if not os.path.exists(path):
             g_log.error("Path %s doesn't exist" % path)
         path = os.path.abspath(path)
@@ -44,6 +48,7 @@ class Cache:
 
     def discard_entry(self, path):
         """Removes file from cache"""
+        path = os.path.abspath(path)
         del self._cache[path]
 
     def invalidate(self):

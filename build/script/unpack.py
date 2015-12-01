@@ -4,13 +4,13 @@ import file_cache
 import debug
 import build_config
 
-import sys
 import os
 import shutil
 from optparse import OptionParser
 
 g_log = debug.Log()
 g_log.enable(debug.LogType.Info, True)
+g_log.enable(debug.LogType.Warning, True)
 g_log.enable(debug.LogType.Error, True)
 g_log.enable(debug.LogType.Debug, True)
 
@@ -30,14 +30,16 @@ class Unpacker:
         for input_file in os.listdir(input_dir):
             name, __ = utils.splitext(input_file)
             input_file = os.path.join(input_dir, input_file)
-            if not config or config.needs_process(name):
-                self.unpack_file(input_file, output_dir, cache, config.get_entry_config(name))
+            module = config.get_module(name)
+            if not config or module != None:
+                self.unpack_file(input_file, output_dir, cache, module)
 
     def unpack_file(self, input_file, output_dir, cache=None, config_entry=None):
         # if upack location is available for a specific file override it
-        if config_entry and config_entry.unpack_destination:
-            g_log.info("Unpack destination for module %s has been overridden on %s for %s" % (input_file, config_entry.unpack_destination, input_file))
-            output_dir = config_entry.unpack_destination
+        unpack_destination = self._get_unpack_destination(config_entry)
+        if config_entry and unpack_destination:
+            g_log.info("Unpack destination for module %s has been overridden on %s for %s" % (input_file, unpack_destination.value, input_file))
+            output_dir = unpack_destination.value
         input_file = os.path.abspath(input_file)
         output_dir = os.path.abspath(output_dir)
         if not os.path.isfile(input_file):
@@ -58,7 +60,7 @@ class Unpacker:
             output_dir = archive.get_output_path(input_file, output_dir)
             input_file_changed = cache.entry_has_changed(input_file)
             output_dir_changed = False
-            if not config_entry or config_entry.enable_destination_cache:
+            if not config_entry or self._is_destination_cache_enabled(config_entry):
                 output_dir_changed = not os.path.exists(output_dir) or cache.entry_has_changed(output_dir)
             return input_file_changed or output_dir_changed
         return True
@@ -71,7 +73,7 @@ class Unpacker:
 
     def _update_cache(self, input_file, output_dir, cache, config_entry):
         if cache:
-            if not config_entry or config_entry.enable_destination_cache: 
+            if not config_entry or self._is_destination_cache_enabled(config_entry): 
                 cache.update_entry(archive.get_output_path(input_file, output_dir))
             cache.update_entry(input_file)
             cache.flush()
@@ -79,6 +81,18 @@ class Unpacker:
     def _remove_file(self, path):
         if (os.path.exists(path)):
             shutil.rmtree(path, ignore_errors=True)
+
+    def _get_unpack_destination(self, config_entry):
+        unpack_destination_attr = config_entry.get_attribute('unpack_destination') if config_entry else None
+        unpack_destination = unpack_destination_attr.value if unpack_destination_attr else None
+        return unpack_destination
+
+    def _is_destination_cache_enabled(self, config_entry):
+        enable_destination_cache_attr = config_entry.get_attribute('enable_destination_cache') if config_entry else None
+        enable_destination_cache = enable_destination_cache_attr.value if enable_destination_cache_attr else 'enabled'
+        return enable_destination_cache != 'disabled'
+
+
 
 if __name__ == '__main__':
     parser = OptionParser()
@@ -90,7 +104,7 @@ if __name__ == '__main__':
     cache = file_cache.Cache(os.path.join(options.output, 'file_cache'))
     unpacker = Unpacker()
     if os.path.isdir(options.input):
-        config = build_config.UnpackConfig(options.config)
+        config = build_config.BuildConfig(options.config)
         unpacker.unpack_dir(options.input, options.output, cache, config)
     elif os.path.isfile(options.input):
         unpacker.unpack_file(options.input, options.output, cache)

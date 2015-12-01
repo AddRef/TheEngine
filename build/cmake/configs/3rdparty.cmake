@@ -21,7 +21,7 @@ set (UNPACK_SCRIPT python ${BUILD_DIR}/script/unpack.py -i ${ROOT_DIR}/3rdparty 
 launch_process(UNPACK_SCRIPT ${ROOT_DIR}/3rdparty/)
 # Launch boost build if boost was unpacked (which happens only when boost archive has been updated)
 # At the end script will copy headers and libs and will remove boost directory
-set (BOOST_BUILD_SCRIPT python ${BUILD_DIR}/script/boost.py -b -r -t ${BOOST_DIR}/include -l ${BOOST_DIR}/libs -c ${BUILD_DIR}/build_config.xml)
+set (BOOST_BUILD_SCRIPT python ${BUILD_DIR}/script/boost.py -b -i ${3RDPARTY_UNPACK_DIR}/boost_1_59_0 -t ${BOOST_DIR}/include -l ${BOOST_DIR}/libs -c ${BUILD_DIR}/build_config.xml)
 launch_process(BOOST_BUILD_SCRIPT ${ROOT_DIR}/3rdparty/)
 # Add boost dir to file cache
 set (CACHE_FILE ${3RDPARTY_UNPACK_DIR}/file_cache)

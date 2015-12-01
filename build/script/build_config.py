@@ -10,7 +10,68 @@ g_log.enable(debug.LogType.Info, True)
 g_log.enable(debug.LogType.Error, True)
 g_log.enable(debug.LogType.Debug, True)
 
-class ConfigBase:
+class ModuleAttribute:
+    name = ''
+    value = ''
+
+class Module:
+    def __init__(self):
+        self.clear()
+
+    def add_attribute(self, attribute):
+        self._attributes.append(attribute)
+
+    def get_attribute(self, attribute_name):
+        for attribute in self._attributes:
+            if attribute.name == attribute_name:
+                return attribute
+        return None
+
+    def get_attributes(self):
+        return self._attributes
+
+    def clear(self):
+        self._attributes = []
+
+    _attributes = []
+
+
+class BuildConfig:
+    def __init__(self, unpack_config_path):
+        self._path = unpack_config_path
+        tree = etree.parse(self._path)
+        unpack_config = tree.find('unpack_config')
+        for module in unpack_config:
+            m = Module()
+            for attribute in module:
+                if not self._is_attribute_available_for_platform(attribute):
+                    continue
+                a = ModuleAttribute()
+                a.name = attribute.tag
+                if 'value' in attribute.attrib:
+                    a.value = attribute.attrib['value']
+                # adjust attributes
+                if a.name == 'unpack_destination':
+                    a.value = self._process_env_variable(a.value)
+                # store
+                m.add_attribute(a)
+            self._modules[module.tag] = m
+        self.print_out()
+
+    def get_module(self, module_name):
+        if module_name in self._modules:
+            return self._modules[module_name]
+        return None
+
+    def get_config_path(self):
+        return self._path
+
+    def print_out(self):
+        for name, attributes in self._modules.iteritems():
+            print "module %s has the following attributes:" % name
+            for attribute in attributes.get_attributes():
+                print "\t%s: %s" % (attribute.name, attribute.value)
+
     def _process_env_variable(self, input_str):
         input_str = input_str.lower()
         if input_str.startswith('{env:'):
@@ -21,102 +82,29 @@ class ConfigBase:
             return env_variable_value + remaining_path
         else:
             # not an enviroment variables
-            output = input
+            return input_str
 
-########################################################################
-## Unpack config
-########################################################################
-class UnpackConfigEntry:
-    enable_destination_cache = True
-    unpack_destination = ''
-
-class UnpackConfig(ConfigBase):
-    """Filters list of files based on unpack_config.xml"""
-    def __init__(self, unpack_config_path):
-        self._filters = {}
-        self._unpack_config_path = os.path.abspath(unpack_config_path)
-        # Build list of files to unpack
-        tree = etree.parse(self._unpack_config_path)
-        # Find common section of filter file
-        unpack_config = tree.find('unpack_config')
-        common_config = unpack_config.find('common')
-        # Find OS specific part of filter file
-        config_name = ""
-        if utils.get_platform() == utils.Platform.Linux:
-            config_name = 'linux'
-        elif utils.get_platform() == utils.Platform.OSX:
-            config_name = 'mac'
-        elif utils.get_platform() == utils.Platform.Windows:
-            config_name = 'windows'
+    def _is_attribute_available_for_platform(self, attribute):
+        current_platform_listed = False;
+        if 'platforms' in attribute.attrib:
+            platforms = self._process_platforms(attribute.attrib['platforms'])
+            if utils.get_platform() in platforms:
+                current_platform_listed = True;
         else:
-            g_log.error("Unsupported platform %s. Terminaring." % sys.platform)
-            sys.exit(-1)
-        os_specific_config = unpack_config.find(config_name)
-        # Process configs
-        self._process_config(common_config)
-        self._process_config(os_specific_config)
+            # 'platform' specification is missing so this attribute is available for all platforms
+            current_platform_listed = True
+        return current_platform_listed
 
-    def get_config_path(self):
-        return self._unpack_config_path
+    def _process_platforms(self, platforms_string):
+        platform_strings = utils.split_string(platforms_string)
+        platforms = []
+        if 'windows' in platform_strings:
+            platforms.append(utils.Platform.Windows)
+        if 'linux' in platform_strings:
+            platforms.append(utils.Platform.Linux)
+        if 'osx' in platform_strings:
+            platforms.append(utils.Platform.OSX)
+        return platforms
 
-    def needs_process(self, file_name):
-        # Do not process files that are missing in filter list
-        if not file_name in self._filters:
-            return False
-        return True
-
-    def get_entry_config(self, file_name):
-        if file_name in self._filters:
-            return self._filters[file_name]
-        return None
-
-    def _process_config(self, config):
-        for module in config:
-            # Read attributes
-            filter_entry = UnpackConfigEntry()
-            if 'enable_destination_cache' in module.attrib:
-                if module.attrib['enable_destination_cache'] == 'enabled':
-                    filter_entry.enable_destination_cache = True
-                if module.attrib['enable_destination_cache'] == 'disabled':
-                    filter_entry.enable_destination_cache = False
-            if 'unpack_destination' in module.attrib:
-                filter_entry.unpack_destination
-                # process enviroment alias as an unpack destination
-                filter_entry.unpack_destination = self._process_env_variable(module.attrib['unpack_destination'])
-            self._filters[module.tag] = filter_entry
-
-########################################################################
-## Boost config
-########################################################################
-class BoostConfigEntry:
-    build_directory = ''
-    remove_after_build = False
-
-class BoostConfig(ConfigBase):
-    """Filters list of files based on unpack_config.xml"""
-    def __init__(self, unpack_config_name):
-        tree = etree.parse(unpack_config_name)
-        components_config = tree.find('components_config')
-        boost_config = components_config.find('boost')
-        self._process_config(boost_config)
-
-    def get_modules_list(self):
-        return self._modules
-
-    def get_config(self):
-        return self._boost_config
-
-    def _process_config(self, config):
-        for module in config:
-            #build a list of modules to build
-            self._modules.append(module.tag)
-        if 'build_directory' in config.attrib:
-            self._boost_config.build_directory = self._process_env_variable(config.attrib['build_directory'])
-        if 'remove_after_build' in config.attrib:
-            if config.attrib['remove_after_build'] == 'enabled':
-                self._boost_config.remove_after_build = True
-            if config.attrib['remove_after_build'] == 'disabled':
-                self._boost_config.remove_after_build = False
-
-    _modules = []
-    _boost_config = BoostConfigEntry()
+    _modules = {}
+    _path = ''

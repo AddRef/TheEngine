@@ -19,20 +19,21 @@ def splitext(file):
     return (name, ext)
 
 class Platform:
-	Unknown = 0
-	Linux = 1
-	OSX = 2
-	Windows = 3
+    Unknown = 0
+    Linux = 1
+    OSX = 2
+    Windows = 3
+    All = 256
 
 def get_platform():
     if sys.platform == 'linux' or sys.platform == 'linux2':
-    	return Platform.Linux
+        return Platform.Linux
     elif sys.platform == 'darwin':
-    	return Platform.OSX
+        return Platform.OSX
     elif sys.platform == 'win32':
         return Platform.Windows
     else:
-    	return Platform.Unknown
+        return Platform.Unknown
 
 def copy(source, destination, wildcard='*', recursive=True):
     g_log.debug("copy is called with source: %s, destination: %s, wildcard: %s, recursive: %s" 
@@ -67,3 +68,8 @@ def copy(source, destination, wildcard='*', recursive=True):
         g_log.debug("Coping file: %s" % source)
         shutil.copyfile(source, destination)
     return True
+
+def split_string(str):
+    str = str.lower()
+    str = str.replace(' ', '')
+    return str.split(',')

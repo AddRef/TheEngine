@@ -14,7 +14,7 @@ class SceneGraph
 struct ISceneObject
 {
 
-};
+}; 
 
 class Scene
 {
