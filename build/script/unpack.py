@@ -19,11 +19,11 @@ class Unpacker:
         pass
 
     def unpack_dir(self, input_dir, output_dir, cache=None, config=None):
-        config_path = config.get_config_path()
-        if cache and config and cache.entry_has_changed(config_path):
-            # if config has changes from last repack then we need to fully rerun unpack
-            cache.invalidate()
-        cache.update_entry(config_path)
+        # config_path = config.get_config_path()
+        # if cache and config and cache.entry_has_changed(config_path):
+        #     # if config has changes from last repack then we need to fully rerun unpack
+        #     cache.invalidate()
+        # cache.update_entry(config_path)
         
         if not os.path.exists(output_dir):
             os.makedirs(output_dir)

@@ -56,7 +56,6 @@ class BuildConfig:
                 # store
                 m.add_attribute(a)
             self._modules[module.tag] = m
-        self.print_out()
 
     def get_module(self, module_name):
         if module_name in self._modules:
