@@ -10,27 +10,23 @@ typedef void* SDL_GLContext;
 namespace The
 {
 
-struct IWindowCallback
-{
-    virtual void OnKeyDown(InputKey key) { key; }
-    virtual void OnKeyUp(InputKey key) { key; }
-    virtual void OnMouseDown(InputKey key, uint32_t x, uint32_t y) { key; x; y; }
-    virtual void OnMouseUp(InputKey key, uint32_t  x, uint32_t  y) { key; x; y; }
-    virtual void OnMouseMove(uint32_t x, uint32_t y) { x; y; }
-    virtual void OnFingerDown(float x, float y, float dx, float dy) { x; y; dx; dy; }
-    virtual void OnFingerUp(float x, float y, float dx, float dy) { x; y; dx; dy; }
-    virtual void OnFingerMove(float x, float y, float dx, float dy) { x; y; dx; dy; }
-    virtual void OnMultiGesture(uint16_t numfingers, float x, float y, float theta, float dist) { numfingers; x; y; theta; dist; }
-};
 
 class Window
 {
 public:
-    enum class Error
+    struct ICallback
     {
-        Success,
-        FailedToCreateWindow,
+        virtual void OnKeyDown(InputKey key) { key; }
+        virtual void OnKeyUp(InputKey key) { key; }
+        virtual void OnMouseDown(InputKey key, uint32_t x, uint32_t y) { key; x; y; }
+        virtual void OnMouseUp(InputKey key, uint32_t  x, uint32_t  y) { key; x; y; }
+        virtual void OnMouseMove(uint32_t x, uint32_t y) { x; y; }
+        virtual void OnFingerDown(float x, float y, float dx, float dy) { x; y; dx; dy; }
+        virtual void OnFingerUp(float x, float y, float dx, float dy) { x; y; dx; dy; }
+        virtual void OnFingerMove(float x, float y, float dx, float dy) { x; y; dx; dy; }
+        virtual void OnMultiGesture(uint16_t numfingers, float x, float y, float theta, float dist) { numfingers; x; y; theta; dist; }
     };
+
     struct Desc
     {
         std::string title       = "window";
@@ -41,8 +37,8 @@ public:
 
     Window() {}
     ~Window() {}
-    Error Open(const Desc& desc);
-    void Close();
+    bool Create(const Desc& desc);
+    void Destroy();
     void SetDimensions(uint32_t width, uint32_t height);
     void SetFullscreen(bool fullscreen);
     void SetTitle(const std::string& title);

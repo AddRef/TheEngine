@@ -2,19 +2,44 @@
 
 namespace The
 {
-Error Loader::LoadTexture(const std::string& path, TextureData& out_data)
+TextureData()
 {
 
 }
-
-Error Loader::LoadGeometry(const std::string& path, GeometryData& out_data)
+~TextureData()
 {
 
 }
+bool Load(const std::string& path)
+{
+    
+}
 
-Error Loader::LoadShader(const std::string& path, ShaderData& out_data)
+MeshData()
 {
 
+}
+~MeshData()
+{
+
+}
+bool Load(const std::string& path)
+{
+    
+}
+
+ShaderData()
+{
+
+}
+~ShaderData()
+{
+
+}
+bool Load(const std::string& path)
+{
+    
+}
 }
 
 }

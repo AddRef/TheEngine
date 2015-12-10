@@ -23,14 +23,22 @@ public:
 
 };
 
-class EngineCore
+class Engine
 {
 public:
-	EngineCore();
+    struct ICallback
+    {
+        virtual void OnUpdate() = 0;
+    };
+	Engine();
+    ~Engine();
+    bool Create(const The::Window::Desc& window_desc);
+    void SetCallback(ICallback* callback);
     void SetScene(Scene* scene);
+    Window& GetWindow();
 
 private:
-	
+	ICallback* m_callback = nullptr;
 };
 
 };

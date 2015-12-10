@@ -1,35 +1,43 @@
 #pragme once
+#include "common.h"
+
+#include <string>
 
 namespace The
 {
 
-class TextureData
+class ResourceData
+{
+public:
+    virtual bool IsLoaded() const
+    {
+        return m_loaded;
+    }
+protected:
+    bool m_loaded = false;
+};
+
+class TextureData : public ResourceData
 {
 public:
     TextureData();
+    ~TextureData();
+    bool Load(const std::string& path);
 };
 
-class GeometryData
+class MeshData : public ResourceData
 {
 public:
-    GeometryData();
+    MeshData();
+    ~MeshData();
+    bool Load(const std::string& path);
 };
 
-class ShaderData
+class ShaderData : 
 {
-public:
+public:    
     ShaderData();
-};
-
-class Loader
-{
-    enum class Error
-    {
-        Ok,
-        PathDoesntExist
-    };
-    static Error LoadTexture(const std::string& path, TextureData& out_data);
-    static Error LoadGeometry(const std::string& path, GeometryData& out_data);
-    static Error LoadShader(const std::string& path, ShaderData& out_data);
+    ~ShaderData();
+    bool Load(const std::string& path);
 };
 }

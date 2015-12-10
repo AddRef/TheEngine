@@ -1,7 +1,7 @@
 #include "engine_window.h"
 #include <cstdio>
 
-class WindowCallback : public The::IWindowCallback
+class WindowCallback : public The::Window::ICallback
 {
 protected:
     // The::IWindowCallback

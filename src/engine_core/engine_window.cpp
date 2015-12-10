@@ -8,7 +8,7 @@
 namespace The
 {
     
-Window::Error Window::Open(const Desc& desc)
+bool Window::Create(const Desc& desc)
 {
     m_desc = desc;
     SDL_Init(SDL_INIT_VIDEO);
@@ -21,7 +21,7 @@ Window::Error Window::Open(const Desc& desc)
     return Error::Success;
 }
 
-void Window::Close()
+void Window::Destroy()
 {
     SDL_DestroyWindow(m_window);
     SDL_Quit();

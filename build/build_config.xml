@@ -7,6 +7,7 @@
         <SDL2/>
         <easylogging/>
         <tinyobjloader/>
+        <glm/>
         <boost_1_59_0>
             <enable_destination_cache value='disabled'/>
             <build_components value='log, filesystem'/>
