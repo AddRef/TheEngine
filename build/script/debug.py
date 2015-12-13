@@ -40,6 +40,7 @@ class Log:
 	def error(self, str):
 		if self._error:
 			print "[ERROR]: " + str
+			raise
 
 	def warning(self, str):
 		if self._warning:

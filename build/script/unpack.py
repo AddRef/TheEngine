@@ -38,8 +38,8 @@ class Unpacker:
         # if upack location is available for a specific file override it
         unpack_destination = self._get_unpack_destination(config_entry)
         if config_entry and unpack_destination:
-            g_log.info("Unpack destination for module %s has been overridden on %s for %s" % (input_file, unpack_destination.value, input_file))
-            output_dir = unpack_destination.value
+            g_log.info("Unpack destination for module %s has been overridden on %s for %s" % (input_file, unpack_destination, input_file))
+            output_dir = unpack_destination
         input_file = os.path.abspath(input_file)
         output_dir = os.path.abspath(output_dir)
         if not os.path.isfile(input_file):

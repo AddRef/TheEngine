@@ -17,15 +17,15 @@ g_log.enable(debug.LogType.Debug, True)
 class Boost:
     def __init__(self, boost_path, config=None, remove_boost = False):
         print 0
-        if not boost_path or not os.path.exists(boost_path):
-            g_log.warning("Boost location %s doesn't exist" % boost_path)
-            sys.exit(0)
-        boost_path = os.path.abspath(boost_path)
+        boost_path = os.path.abspath(boost_path) if boost_path else None
         self._platform = utils.get_platform()
         self._boost_path = boost_path
         self._remove_boost = remove_boost
-        self._boost_config = config.get_module('boost_1_59_0')
+        self._boost_config = config.get_module(self._boost_name)
         self._process_config(self._boost_config)
+        if not self._boost_path or not os.path.exists(self._boost_path):
+            g_log.warning("Boost location %s doesn't exist" % self._boost_path)
+            sys.exit(0)
 
     def __del__(self):
         if self._remove_boost:
@@ -70,11 +70,11 @@ class Boost:
     def _process_config(self, module):
         if not config:
             return
-        build_directory = module.get_attribute('build_directory')
+        build_directory = module.get_attribute('unpack_destination')
         remove_after_build = module.get_attribute('remove_after_build')
         if build_directory:
             g_log.info("Boost build directory has been overridden by config file on: %s" % build_directory.value)
-            self._boost_path = build_directory.value
+            self._boost_path = os.path.join(build_directory.value, self._boost_name)
         if remove_after_build:
             g_log.info("Boost will be removed at the end if this script based on config file")
             self._remove_boost = remove_after_build
@@ -96,6 +96,7 @@ class Boost:
     _boost_path = None
     _remove_boost = False
     _config = None
+    _boost_name = 'boost_1_59_0'
 
 
 
@@ -111,6 +112,7 @@ if __name__ == '__main__':
     g_log.debug("boost.py options: %s" % options)
     if (options.config):
         config = build_config.BuildConfig(options.config)
+    print options.input
     boost = Boost(options.input, config, options.remove_boost_on_exit)
     if (options.build):
         boost.build()

@@ -14,5 +14,6 @@
             <unpack_destination value='{ENV:TEMP}/boost' platforms='windows'/>
             <!-- <remove_after_build value='enabled'/> -->
         </boost_1_59_0>
+        <WindowsKits platforms='windows'/>
     </unpack_config>
 </root>
