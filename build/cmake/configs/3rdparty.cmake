@@ -1,6 +1,8 @@
 include (${BUILD_DIR}/cmake/utils/install.cmake)
 include (${BUILD_DIR}/cmake/configs/global.cmake)
 
+option (ENABLE_BOOST "Use Boost" ON)
+
 if (WIN32)
     set (3RDPARTY_UNPACK_DIR ${ROOT_DIR}/3rdparty/_unpack/windows)
     set (BIN2CPP ${3RDPARTY_UNPACK_DIR}/bin2cpp/bin2cpp.exe)
@@ -14,20 +16,21 @@ endif()
 set (BOOST_DIR ${3RDPARTY_UNPACK_DIR}/boost)
 
 # Unpack 3rd party
-option (ENABLE_BOOST OFF)
 message("========================================================")
 message("THAT COULD TAKE SOME TIME. PLEASE BE PATIENT. IT'S ONE TIME ACTION.")
 # Unpack list of archives specified by configuration file
 set (UNPACK_SCRIPT python ${BUILD_DIR}/script/unpack.py -i ${ROOT_DIR}/3rdparty -o ${3RDPARTY_UNPACK_DIR} -c ${BUILD_DIR}/build_config.xml)
 launch_process(UNPACK_SCRIPT ${ROOT_DIR}/3rdparty/)
-# Launch boost build if boost was unpacked (which happens only when boost archive has been updated)
-# At the end script will copy headers and libs and will remove boost directory
-set (BOOST_BUILD_SCRIPT python ${BUILD_DIR}/script/boost.py -b -t ${BOOST_DIR}/include -l ${BOOST_DIR}/libs -c ${BUILD_DIR}/build_config.xml)
-launch_process(BOOST_BUILD_SCRIPT ${ROOT_DIR}/3rdparty/)
-# Add boost dir to file cache
-set (CACHE_FILE ${3RDPARTY_UNPACK_DIR}/file_cache)
-set (FILE_CACHE_SCRIPT python ${BUILD_DIR}/script/file_cache.py -u ${BOOST_DIR} -c ${CACHE_FILE})
-launch_process(FILE_CACHE_SCRIPT ".")
+if (ENABLE_BOOST)
+    # Launch boost build if boost was unpacked (which happens only when boost archive has been updated)
+    # At the end script will copy headers and libs and will remove boost directory
+    set (BOOST_BUILD_SCRIPT python ${BUILD_DIR}/script/boost.py -b -t ${BOOST_DIR}/include -l ${BOOST_DIR}/libs -c ${BUILD_DIR}/build_config.xml)
+    launch_process(BOOST_BUILD_SCRIPT ${ROOT_DIR}/3rdparty/)
+    # Add boost dir to file cache
+    set (CACHE_FILE ${3RDPARTY_UNPACK_DIR}/file_cache)
+    set (FILE_CACHE_SCRIPT python ${BUILD_DIR}/script/file_cache.py -u ${BOOST_DIR} -c ${CACHE_FILE})
+    launch_process(FILE_CACHE_SCRIPT ".")
+endif()
 message("========================================================")
 
 # Boost config
@@ -44,11 +47,10 @@ endif()
 # MS SDL Config
 if (WIN32)
     if(${ARCH_64})
-        set (WINSDK_DIR ${3RDPARTY_DIR}/_unpack/WindowsKits/8.0/Lib/win8/um/x64)
+        set (ENV{DXSDK_DIR} ${3RDPARTY_UNPACK_DIR}/WindowsKits/Lib/win8/um/x64)
     else()
-        set (WINSDK_DIR ${3RDPARTY_DIR}/_unpack/WindowsKits/8.0/Lib/win8/um/x86)
+        set (ENV{DXSDK_DIR} ${3RDPARTY_UNPACK_DIR}/WindowsKits/Lib/win8/um/x86)
     endif()
-    set (CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH} ${WINSDK_DIR})
 endif()
 
 
