@@ -16,9 +16,9 @@ bool Window::Create(const Desc& desc)
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 #endif //WIN32
     m_window = SDL_CreateWindow(desc.title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, desc.width, desc.height, SDL_WINDOW_OPENGL);
-    THE_ERROR_IF(!m_window, "Window creation failed: " << SDL_GetError(), return Error::FailedToCreateWindow);
+    THE_ERROR_IF(!m_window, "Window creation failed: " << SDL_GetError(), return false);
     SetFullscreen(desc.fullscreen);
-    return Error::Success;
+    return true;
 }
 
 void Window::Destroy()
@@ -46,12 +46,12 @@ void Window::SetTitle(const std::string& title)
     SDL_SetWindowTitle(m_window, m_desc.title.c_str());
 }
 
-void Window::RegisterInputCallback(IWindowCallback& callback)
+void Window::RegisterInputCallback(Window::ICallback& callback)
 {
     m_input_callbacks.insert(&callback);
 }
 
-void Window::UnregisterInputCallback(IWindowCallback& callback)
+void Window::UnregisterInputCallback(Window::ICallback& callback)
 {
     if (! m_input_callbacks.empty())
         m_input_callbacks.erase(&callback);
