@@ -44,32 +44,41 @@ public:
     std::set<TCallbackWPtr> m_subscribers;
 };
 
-class EmitterImpl : public Emitter<EmitterImpl, EmitterImpl::ICallback>
+
+template <typename TBaseClass, typename TCallback>
+class Broadcaster
 {
 public:
-    struct ICallback
+    template < typename std::enable_if<std::is_base_of<TCallback, BroadcastCallback> >
+    void AddCallback(TCallback& callback)
     {
-        virtual void Callback() = 0;
-    };
+        BroadcastCallback* broadcast_callback = static_cast<BroadcastCallback>(callback);
+        m_callbacks.insert(broadcast_callback->GetPtr());
+    }
+    void AddCallback(TCallback& callback)
+    {
+        throw std::runtime_error("invalid callback type has been passed");
+    }
+
+    std::set<TCallback> GetCallbacks() const
+    {
+        for (const auto& callback : m_callbacks)
+        {
+        }
+    }
+private:
+    std::set< std::weak_ptr<BroadcastCallback> > m_callbacks;
 };
 
-class RecieverImpl : protected EmitterImpl::ICallback
+class BroadcastCallback : protected std::enable_shared_from_this<BroadcastCallback>
 {
-public:
-    virtual void Callback() override
+    template <typename TBaseClass, typename TCallback>
+    friend class Broadcaster;
+
+    using Ptr = std::weak_ptr<const BroadcastCallback>;
+
+    const Ptr& GetPtr() const
     {
-        std::cout << "Callback" << std::endl;
+        return shared_from_this();
     }
 };
-
-void main()
-{
-    EmitterImpl emitter;
-    {
-        RecieverImpl reciever;
-        emitter.AddCallback(reciever);
-        emitter.Notify();
-    }
-    emitter.Notify();
-
-}
