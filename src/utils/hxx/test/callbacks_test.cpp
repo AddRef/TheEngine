@@ -2,17 +2,18 @@
 
 #include "gtest/gtest.h"
 
-class BroadcasterImpl : protected Broadcaster<BroadcasterImpl, BroadcasterImpl::ICallback>
+
+class BroadcasterImpl : protected Broadcaster<BroadcasterImpl::ICallback>
 {
 public:
-    class ICallback : BroadcastCallback
+    struct ICallback
     {
 
     };
 
 };
 
-class BroadcastCallbackImpl : protected BroadcastCallback
+class BroadcastCallbackImpl : protected Broadcaster<BroadcasterImpl::ICallback>::Callback
 {
 
 };
