@@ -24,7 +24,11 @@ launch_process(UNPACK_SCRIPT ${ROOT_DIR}/3rdparty/)
 if (ENABLE_BOOST)
     # Launch boost build if boost was unpacked (which happens only when boost archive has been updated)
     # At the end script will copy headers and libs and will remove boost directory
-    set (BOOST_BUILD_SCRIPT python ${BUILD_DIR}/script/boost.py -b -t ${BOOST_DIR}/include -l ${BOOST_DIR}/libs -c ${BUILD_DIR}/build_config.xml)
+    if (${MSVC_VERSION} EQUAL 1800)
+        message(STATUS "Building boost for Visual Studio 2013. Other versions are not supported yet.")
+        set (BOOST_ADDITIONAL_BUILD_ARGUMENTS -a toolset=msvc-12.0) # support VS2013 for now only on Windows
+    endif()
+    set (BOOST_BUILD_SCRIPT python ${BUILD_DIR}/script/boost.py -b -t ${BOOST_DIR}/include -l ${BOOST_DIR}/libs -c ${BUILD_DIR}/build_config.xml ${BOOST_ADDITIONAL_BUILD_ARGUMENTS})
     launch_process(BOOST_BUILD_SCRIPT ${ROOT_DIR}/3rdparty/)
     # Add boost dir to file cache
     set (CACHE_FILE ${3RDPARTY_UNPACK_DIR}/file_cache)

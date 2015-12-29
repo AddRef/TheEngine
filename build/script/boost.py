@@ -32,7 +32,7 @@ class Boost:
             g_log.debug("Removing location: self._boost_path")
             shutil.rmtree(self._boost_path, ignore_errors=True)
 
-    def build(self):
+    def build(self, build_arguments):
         g_log.info("Building boost")
         # override boost location if it's specified in config file
         if self._platform == utils.Platform.Linux or self._platform == utils.Platform.OSX:
@@ -45,7 +45,8 @@ class Boost:
         bootstrap = process.Process(executable=bootstrap_location, working_directory=self._boost_path)
         bootstrap.launch()
         bjam_location = os.path.join(self._boost_path, 'bjam')
-        bjam_command_line = 'link=static runtime-link=static' + self._form_bjam_module_list(self._boost_config)
+        bjam_command_line = (build_arguments + " ") if build_arguments else ""
+        bjam_command_line += 'link=static runtime-link=static' + self._form_bjam_module_list(self._boost_config)
         print bjam_command_line
         bjam = process.Process(executable=bjam_location, working_directory=self._boost_path, arguments=bjam_command_line)
         bjam.launch()
@@ -108,6 +109,7 @@ if __name__ == '__main__':
     parser.add_option('-t', '--output_headers', dest='output_headers', help='destination for headers')
     parser.add_option('-l', '--output_libs', dest='output_libs', help='destination for built libraries')
     parser.add_option('-r', '--remove_boost_on_exit', dest='remove_boost_on_exit', action='store_true', help='removes boost directory after this script finishes to work')
+    parser.add_option('-a', '--build_arguments', dest='build_arguments', help='list of additional boost build arguments')
     (options, args) = parser.parse_args()
     g_log.debug("boost.py options: %s" % options)
     if (options.config):
@@ -115,7 +117,7 @@ if __name__ == '__main__':
     print options.input
     boost = Boost(options.input, config, options.remove_boost_on_exit)
     if (options.build):
-        boost.build()
+        boost.build(options.build_arguments)
     if options.output_headers:
         boost.copy_headers(options.output_headers)
     if options.output_libs:
