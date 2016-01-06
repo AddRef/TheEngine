@@ -1,5 +1,6 @@
 #pragma once
 #include "input_keys.h"
+#include "callbacks.hxx"
 
 #include <string>
 #include <set>
@@ -12,10 +13,10 @@ namespace The
 {
 
 
-class Window
+class Window : public Emitter
 {
 public:
-    struct ICallback
+    struct IInputCallback
     {
         virtual void OnKeyDown(InputKey key) { key; }
         virtual void OnKeyUp(InputKey key) { key; }
@@ -36,7 +37,10 @@ public:
         bool        fullscreen  = false;
     };
 
-    Window() {}
+    Window() 
+    {
+        Emitter::Init<IInputCallback>();
+    }
     ~Window() {}
     bool Create(const Desc& desc);
     void Destroy();
@@ -44,8 +48,6 @@ public:
     void SetFullscreen(bool fullscreen);
     void SetTitle(const std::string& title);
     const Desc& GetDescription() const { return m_desc; }
-    void RegisterInputCallback(Window::ICallback& callbacks);
-    void UnregisterInputCallback(Window::ICallback& callbacks);
     bool Process() const;
 private:
     static InputKey convertSdlCodeToExternal(uint32_t sdl_key);
@@ -54,7 +56,6 @@ private:
     bool m_opened = false;
 
     SDL_Window*     m_window;
-    std::set<Window::ICallback*> m_input_callbacks;
 };
 
 };

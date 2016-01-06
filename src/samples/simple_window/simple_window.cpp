@@ -1,7 +1,7 @@
 #include "engine_window.h"
 #include <cstdio>
 
-class WindowCallback : public The::Window::ICallback
+class WindowCallback : public Receiver<The::Window::IInputCallback>
 {
 protected:
     // The::IWindowCallback
@@ -52,11 +52,10 @@ int main()
     window_desc.width = 640;
     window_desc.height = 480;
     window_desc.title = "simple_window";
-    window.Open(window_desc);
-    window.RegisterInputCallback(callback);
+    window.Create(window_desc);
+    window.AddCallback(callback);
     while (window.Process())
     {
     }
-    window.UnregisterInputCallback(callback);
     return 0;
 }

@@ -1,5 +1,5 @@
 #include "engine_window.h"
-#include "log.h"
+#include "log.hxx"
 
 #include "SDL.h"
 #include "SDL_opengles2.h"
@@ -46,17 +46,6 @@ void Window::SetTitle(const std::string& title)
     SDL_SetWindowTitle(m_window, m_desc.title.c_str());
 }
 
-void Window::RegisterInputCallback(Window::ICallback& callback)
-{
-    m_input_callbacks.insert(&callback);
-}
-
-void Window::UnregisterInputCallback(Window::ICallback& callback)
-{
-    if (! m_input_callbacks.empty())
-        m_input_callbacks.erase(&callback);
-}
-
 bool Window::Process() const
 {
     SDL_Event event;
@@ -68,40 +57,40 @@ bool Window::Process() const
         {
             if (!event.key.repeat)
             {
-                for (auto& cb : m_input_callbacks) cb->OnKeyDown(convertSdlCodeToExternal(event.key.keysym.sym));
+                for (auto& cb : Emitter::GetCallback<IInputCallback>()) cb->OnKeyDown(convertSdlCodeToExternal(event.key.keysym.sym));
             }
         } break;
         case SDL_KEYUP:
         {
-            for (auto& cb : m_input_callbacks) cb->OnKeyUp(convertSdlCodeToExternal(event.key.keysym.sym));
+            for (auto& cb : Emitter::GetCallback<IInputCallback>()) cb->OnKeyUp(convertSdlCodeToExternal(event.key.keysym.sym));
         } break;
         case SDL_MOUSEBUTTONDOWN:
         {
-            for (auto& cb : m_input_callbacks) cb->OnMouseDown(convertSdlCodeToExternal(event.button.button), event.button.x, event.button.y);
+            for (auto& cb : Emitter::GetCallback<IInputCallback>()) cb->OnMouseDown(convertSdlCodeToExternal(event.button.button), event.button.x, event.button.y);
         } break;
         case SDL_MOUSEBUTTONUP:
         {
-            for (auto& cb : m_input_callbacks) cb->OnMouseUp(convertSdlCodeToExternal(event.button.button), event.button.x, event.button.y);
+            for (auto& cb : Emitter::GetCallback<IInputCallback>()) cb->OnMouseUp(convertSdlCodeToExternal(event.button.button), event.button.x, event.button.y);
         } break;
         case SDL_MOUSEMOTION:
         {
-            for (auto& cb : m_input_callbacks) cb->OnMouseMove(event.motion.x, event.motion.y);
+            for (auto& cb : Emitter::GetCallback<IInputCallback>()) cb->OnMouseMove(event.motion.x, event.motion.y);
         } break;
         case SDL_FINGERDOWN:
         {
-            for (auto& cb : m_input_callbacks) cb->OnFingerDown(event.tfinger.x, event.tfinger.y, event.tfinger.dx, event.tfinger.dy);
+            for (auto& cb : Emitter::GetCallback<IInputCallback>()) cb->OnFingerDown(event.tfinger.x, event.tfinger.y, event.tfinger.dx, event.tfinger.dy);
         }break;
         case SDL_FINGERUP:
         {
-            for (auto& cb : m_input_callbacks) cb->OnFingerUp(event.tfinger.x, event.tfinger.y, event.tfinger.dx, event.tfinger.dy);
+            for (auto& cb : Emitter::GetCallback<IInputCallback>()) cb->OnFingerUp(event.tfinger.x, event.tfinger.y, event.tfinger.dx, event.tfinger.dy);
         } break;
         case SDL_FINGERMOTION:
         {
-            for (auto& cb : m_input_callbacks) cb->OnFingerMove(event.tfinger.x, event.tfinger.y, event.tfinger.dx, event.tfinger.dy);
+            for (auto& cb : Emitter::GetCallback<IInputCallback>()) cb->OnFingerMove(event.tfinger.x, event.tfinger.y, event.tfinger.dx, event.tfinger.dy);
         } break;
         case SDL_MULTIGESTURE:
         {
-            for (auto& cb : m_input_callbacks) cb->OnMultiGesture(event.mgesture.numFingers, event.mgesture.x, event.mgesture.y, event.mgesture.dTheta, event.mgesture.dDist);
+            for (auto& cb : Emitter::GetCallback<IInputCallback>()) cb->OnMultiGesture(event.mgesture.numFingers, event.mgesture.x, event.mgesture.y, event.mgesture.dTheta, event.mgesture.dDist);
         } break;
         case SDL_QUIT:
             return false;

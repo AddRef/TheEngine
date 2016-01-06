@@ -49,6 +49,12 @@ public:
         Emitter::Init<ICallback1>();
         // We intentionally don't register ICCallback2 to use it for exceptions validation
     }
+
+    template <typename TCallback>
+    std::list<TCallback*> GetCallback() const
+    {
+        return Emitter::GetCallback<TCallback>();
+    }
 };
 
 class Receiver0Impl 

@@ -79,7 +79,8 @@ class Emitter
         std::list< typename Receiver<TCallback>::WPtr > m_callbacks;
     };
 
-public:
+protected:
+    // For usage by inherited class
     Emitter()
     {
     }
@@ -96,7 +97,15 @@ public:
             m_holders.push_back(std::move(holder));
         }
     }
-
+    template <typename TCallback>
+    std::list<TCallback*> GetCallback() const
+    {
+        auto holder = _findHolder<TCallback>();
+        if (!holder) return std::list<TCallback*>();
+        return holder->GetCallback();
+    }
+public:
+    // For public usage
     template <typename TCallback>
     void AddCallback(Receiver<TCallback>& receiver)
     {
@@ -112,18 +121,9 @@ public:
         if (!holder) throw std::runtime_error("Invalid callback type is passed");
         holder->RemoveCallback(receiver);
     }
-
-    template <typename TCallback>
-    std::list<TCallback*> GetCallback()
-    {
-        auto holder = _findHolder<TCallback>();
-        if (!holder) return std::list<TCallback*>();
-        return holder->GetCallback();
-    }
-
 private:
     template <typename TCallback>
-    Holder<TCallback>* _findHolder()
+    Holder<TCallback>* _findHolder() const
     {
         for (const IHolder::UPtr& holder : m_holders)
         {

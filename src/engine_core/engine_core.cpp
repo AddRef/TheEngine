@@ -1,3 +1,3 @@
-#include "log.h"
+#include "log.hxx"
 
 INITIALIZE_EASYLOGGINGPP
