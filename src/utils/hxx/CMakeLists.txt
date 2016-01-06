@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.0.2)
 
 # math
-add_library(math STATIC math.hxx)
+add_library(math STATIC math.hxx stub.cpp)
 set_target_properties(math PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(math
     PUBLIC
@@ -10,7 +10,7 @@ target_include_directories(math
 )
 set_property (TARGET math PROPERTY FOLDER "utils")
 # log
-add_library(log STATIC log.hxx)
+add_library(log STATIC log.hxx stub.cpp)
 set_target_properties(log PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(log 
 	PUBLIC
@@ -19,7 +19,7 @@ target_include_directories(log
 )
 set_property (TARGET log PROPERTY FOLDER "utils")
 # callbacks
-add_library(callbacks STATIC callbacks.hxx)
+add_library(callbacks STATIC callbacks.hxx stub.cpp)
 set_target_properties(callbacks PROPERTIES LINKER_LANGUAGE CXX)
 target_include_directories(callbacks 
 	PUBLIC

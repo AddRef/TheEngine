@@ -3,20 +3,27 @@
 #include <list>
 
 template <typename TCallback>
-class Receiver
-    : public TCallback
-    , protected std::enable_shared_from_this<TCallback>
+class Receiver : public TCallback
 {
     friend class Emitter;
 
-    using Ptr = std::shared_ptr<TCallback>;
-    using WPtr = std::weak_ptr<TCallback>;
+    using TSelfPointer = Receiver<TCallback>*;
+    using Ptr = std::shared_ptr< TSelfPointer >;
+    using WPtr = std::weak_ptr< TSelfPointer >;
+
+public:
+    Receiver()
+        : m_self_pointer(new TSelfPointer(static_cast<TSelfPointer>(this)))
+    {
+    }
 
     Ptr _getPtr()
     {
-        return this->shared_from_this();
+        return m_self_pointer;
     }
-
+    // We can't create object of type Receiver but we can create shared pointer on its pointer
+    // which will show us if object is still alive
+    std::shared_ptr< TSelfPointer > m_self_pointer;
 };
 
 class Emitter
@@ -36,7 +43,8 @@ class Emitter
         virtual ~Holder() {}
         virtual void AddCallback(Receiver<TCallback>& receiver)
         {
-            m_callbacks.push_back(receiver._getPtr());
+            Receiver<TCallback>::Ptr ptr = receiver._getPtr();
+            m_callbacks.push_back(ptr);
         }
         virtual void RemoveCallback(Receiver<TCallback>& receiver)
         {
@@ -52,12 +60,13 @@ class Emitter
         std::list<TCallback*> GetCallback()
         {
             std::list<TCallback*> callbacks;
-            for (auto iter = m_callbacks.begin(); iter != m_callbacks.end(); ++iter)
+            for (auto iter = m_callbacks.begin(); iter != m_callbacks.end();)
             {
                 Receiver<TCallback>::Ptr callback = iter->lock();
                 if (callback)
                 {
-                    callbacks.push_back(callback.get());
+                    callbacks.push_back(*callback.get());
+                    ++iter;
                 }
                 else
                 {
