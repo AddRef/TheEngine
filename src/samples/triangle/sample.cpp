@@ -23,7 +23,7 @@ bool Sample::Init()
     return true;
 }
 
-void Run()
+void Sample::Run()
 {
 
 }
