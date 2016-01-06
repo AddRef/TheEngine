@@ -1,8 +1,15 @@
 #pragma once
+#include "engine_window.h"
+
 #include <memory>
 
 namespace The
 {
+
+struct ISceneObject
+{
+
+}; 
 
 class SceneGraph
 {
@@ -11,11 +18,6 @@ class SceneGraph
     Node AddObject(Node target_node, ISceneObject* child);
 };
 
-struct ISceneObject
-{
-
-}; 
-
 class Scene
 {
 public:
@@ -23,17 +25,16 @@ public:
 
 };
 
-class Engine
+class EngineCore
 {
 public:
     struct ICallback
     {
         virtual void OnUpdate() = 0;
     };
-	Engine();
-    ~Engine();
+    EngineCore();
+    ~EngineCore();
     bool Create(const The::Window::Desc& window_desc);
-    void SetCallback(ICallback* callback);
     void SetScene(Scene* scene);
     Window& GetWindow();
 

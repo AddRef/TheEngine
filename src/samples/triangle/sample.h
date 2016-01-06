@@ -1,9 +1,11 @@
 #pragma once
-#include "resource_loader.h"
+#include "engine_window.h"
+#include "engine_core.h"
+#include "resource_manager.h"
 
 class Sample 
-    : public The::Window::ICallback
-    , public The::Engine::ICallback
+    : public Receiver<The::Window::IInputCallback>
+    , public Receiver<The::EngineCore::ICallback>
 {
 public:
     Sample();
@@ -31,10 +33,7 @@ private:
     bool initScene();
     bool initEngine();
 
-    The::Texture m_texture;
-    The::Mesh m_mesh;
-    The::Shader m_shader;
-
+    The::ResourceManager m_resource_manager;
     The::EngineCore m_engine_core;
     The::Scene m_scene;
 };

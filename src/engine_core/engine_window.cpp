@@ -11,9 +11,10 @@ namespace The
 bool Window::Create(const Desc& desc)
 {
     m_desc = desc;
-    SDL_Init(SDL_INIT_VIDEO);
+    int result = SDL_Init(SDL_INIT_VIDEO);
+    THE_ERROR_IF(result, "Failed to initialize SDL: " << SDL_GetError(), return false);
 #ifdef WIN32
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+    //SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 #endif //WIN32
     m_window = SDL_CreateWindow(desc.title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, desc.width, desc.height, SDL_WINDOW_OPENGL);
     THE_ERROR_IF(!m_window, "Window creation failed: " << SDL_GetError(), return false);

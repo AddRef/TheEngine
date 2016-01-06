@@ -28,7 +28,7 @@ if (ENABLE_BOOST)
         message(STATUS "Building boost for Visual Studio 2013. Other versions are not supported yet.")
         set (BOOST_ADDITIONAL_BUILD_ARGUMENTS -a toolset=msvc-12.0) # support VS2013 for now only on Windows
     endif()
-    set (BOOST_BUILD_SCRIPT python ${BUILD_DIR}/script/boost.py -b -t ${BOOST_DIR}/include -l ${BOOST_DIR}/libs -c ${BUILD_DIR}/build_config.xml ${BOOST_ADDITIONAL_BUILD_ARGUMENTS})
+    set (BOOST_BUILD_SCRIPT python ${BUILD_DIR}/script/boost.py -b -t ${BOOST_DIR}/include -l ${BOOST_DIR}/libs -c ${BUILD_DIR}/build_config.xml -r ${BOOST_ADDITIONAL_BUILD_ARGUMENTS})
     launch_process(BOOST_BUILD_SCRIPT ${ROOT_DIR}/3rdparty/)
     # Add boost dir to file cache
     set (CACHE_FILE ${3RDPARTY_UNPACK_DIR}/file_cache)

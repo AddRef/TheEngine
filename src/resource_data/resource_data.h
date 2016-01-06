@@ -31,11 +31,12 @@ public:
     bool Load(const std::string& path);
 };
 
-class ShaderData : 
+class ShaderData : public ResourceData
 {
 public:    
     ShaderData();
     ~ShaderData();
     bool Load(const std::string& path);
 };
+
 }

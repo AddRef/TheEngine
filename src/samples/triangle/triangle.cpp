@@ -3,7 +3,7 @@
 int main()
 {    
     Sample sample;
-    if (sample.Load())
+    if (sample.Init())
         return -1;
     sample.Run();
     return 0;

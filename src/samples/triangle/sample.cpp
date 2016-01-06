@@ -1,23 +1,26 @@
 #include "sample.h"
 
 #include "engine_core.h"
-#include "log.h"
+#include "log.hxx"
 #include "math.h"
+#include "resource_data.h"
 
 // @public
-Sample()
+Sample::Sample()
+    : m_resource_manager(m_engine_core)
 {
 }
 
-~Sample()
+Sample::~Sample()
 {
 }
 
-bool Init()
+bool Sample::Init()
 {
     if (!loadResources()) return false;
     if (!initScene()) return false;
     if (!initEngine()) return false;
+    return true;
 }
 
 void Run()
@@ -29,47 +32,47 @@ void Run()
 // The::Window::ICallback
 void Sample::OnKeyDown(InputKey key)
 {
-
+    key;
 }
 
 void Sample::OnKeyUp(InputKey key)
 {
-
+    key;
 }
 
 void Sample::OnMouseDown(InputKey key, uint32_t x, uint32_t y)
 {
-
+    key; x; y;
 }
 
 void Sample::OnMouseUp(InputKey key, uint32_t  x, uint32_t  y)
 {
-
+    key; x; y;
 }
 
 void Sample::OnMouseMove(uint32_t x, uint32_t y)
 {
-
+    x; y;
 }
 
 void Sample::OnFingerDown(float x, float y, float dx, float dy)
 {
-
+    x; y; dx; dy;
 }
 
 void Sample::OnFingerUp(float x, float y, float dx, float dy)
 {
-
+    x; y; dx; dy;
 }
 
 void Sample::OnFingerMove(float x, float y, float dx, float dy)
 {
-
+    x; y; dx; dy;
 }
 
 void Sample::OnMultiGesture(uint16_t numfingers, float x, float y, float theta, float dist)
 {
-
+    numfingers; x; y; theta; dist;
 }
 
 // The::Engine::ICallback
@@ -100,9 +103,10 @@ bool Sample::loadResources()
         THE_ERROR("Failed to load shader " << shader_path << std::endl, return false);
     }
 
-    m_texture.Create(texture_data);
-    m_mesh.Create(mesh_data);
-    m_shader.Create(shader_data);
+    m_resource_manager.CreateTexture(texture_data);
+    m_resource_manager.CreateShader(shader_data);
+    m_resource_manager.CreateMesh(mesh_data);
+    return true;
 }
 
 bool Sample::initScene()
@@ -134,18 +138,18 @@ bool Sample::initScene()
 
     // The::Scene::Node* move_light_node = scene.Add(scene.Root(), move_light);
     // scene.Add(move_light_node, light);
-
+    return true;
 }
 
 bool Sample::initEngine()
 {
     The::Window::Desc window_desc;
-    WindowCallback callback;
     window_desc.fullscreen = false;
     window_desc.width = 640;
     window_desc.height = 480;
     window_desc.title = "simple_window";
 
     m_engine_core.Create(window_desc);
-    engine_core.SetScene(&m_scene);
+    m_engine_core.SetScene(&m_scene);
+    return true;
 }
