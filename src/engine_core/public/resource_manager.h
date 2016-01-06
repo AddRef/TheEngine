@@ -1,16 +1,13 @@
 #pragma once
 #include "resource_data.h"
+#include "misc.hxx"
+
 #include <memory>
 
-template <typename TBase>
-struct Shared
-{
-	using Ptr = std::shared_ptr<TBase>;
-	using CPtr = std::shared_ptr<TBase>;
-};
 
 namespace The
 {
+class EngineCore;
 
 class Texture : public Shared<Texture>
 {
@@ -32,6 +29,8 @@ public:
     Texture::Ptr CreateTexture(const TextureData& texture_data);
     Shader::Ptr CreateShader(const ShaderData& shader_data);
     Mesh::Ptr CreateMesh(const MeshData& mesh_data);
+private:
+	EngineCore* m_engine_core = nullptr;
 };
 
 }

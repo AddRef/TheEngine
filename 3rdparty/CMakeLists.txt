@@ -11,6 +11,7 @@ set_property (TARGET gtest            PROPERTY FOLDER "3rdparty")
 set_property (TARGET lua              PROPERTY FOLDER "3rdparty")
 set_property (TARGET SDL2             PROPERTY FOLDER "3rdparty")
 set_property (TARGET SDL2main         PROPERTY FOLDER "3rdparty")
+set_property (TARGET uninstall        PROPERTY FOLDER "3rdparty")
 set_property (TARGET tinyobjloader    PROPERTY FOLDER "3rdparty")
 if (SDL_STATIC)
     set_property (TARGET SDL2-static      PROPERTY FOLDER "3rdparty/SDL")
@@ -19,4 +20,5 @@ endif()
 
 set_target_properties(gtest PROPERTIES COMPILE_FLAGS -DGTEST_HAS_TR1_TUPLE=0)
 target_include_directories(SDL2 PUBLIC ${3RDPARTY_UNPACK_DIR}/SDL2/include)
+target_include_directories(tinyobjloader PUBLIC ${3RDPARTY_UNPACK_DIR}/tinyobjloader)
 

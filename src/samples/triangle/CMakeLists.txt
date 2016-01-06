@@ -8,4 +8,4 @@ add_executable(triangle
     ${SOURCE}
 )
 
-target_link_libraries(triangle engine_core resource_loader math)
+target_link_libraries(triangle engine_core math)

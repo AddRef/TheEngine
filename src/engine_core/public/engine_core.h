@@ -21,8 +21,7 @@ class SceneGraph
 class Scene
 {
 public:
-    Scene();
-
+    Scene() {}
 };
 
 class EngineCore
@@ -32,14 +31,15 @@ public:
     {
         virtual void OnUpdate() = 0;
     };
-    EngineCore();
-    ~EngineCore();
+    EngineCore() {}
+    ~EngineCore() {}
     bool Create(const The::Window::Desc& window_desc);
-    void SetScene(Scene* scene);
-    Window& GetWindow();
+    void SetScene(Scene* scene) { scene; }
+    Window& GetWindow() { return m_window; }
 
 private:
 	ICallback* m_callback = nullptr;
+    Window  m_window;
 };
 
 };

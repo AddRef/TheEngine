@@ -27,19 +27,19 @@ protected:
     }
     virtual void OnFingerDown(float x, float y, float dx, float dy)
     {
-        printf("Finger is down, coordinates: %d, %d, delta: %d, %d\n", x, y, dx, dy);
+        printf("Finger is down, coordinates: %f, %f, delta: %f, %f\n", x, y, dx, dy);
     }
     virtual void OnFingerUp(float x, float y, float dx, float dy)
     {
-        printf("Finger is up, coordinates: %d, %d, delta: %d, %d\n", x, y, dx, dy);
+        printf("Finger is up, coordinates: %f, %f, delta: %f, %f\n", x, y, dx, dy);
     }
     virtual void OnFingerMove(float x, float y, float dx, float dy)
     {
-        printf("Finger move, coordinates: %d, %d, delta: %d, %d\n", x, y, dx, dy);
+        printf("Finger move, coordinates: %f, %f, delta: %f, %f\n", x, y, dx, dy);
     }
     virtual void OnMultiGesture(uint16_t numfingers, float x, float y, float theta, float dist)
     {
-        printf("Multigesture, fingers: %d, coordinates: %d, %d, theta: %d, distance: %d\n", numfingers, x, y, theta, dist);
+        printf("Multigesture, fingers: %d, coordinates: %f, %f, theta: %f, distance: %f\n", numfingers, x, y, theta, dist);
     }
 };
 

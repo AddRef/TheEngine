@@ -18,4 +18,5 @@ target_include_directories(engine_core
 	${ROOT_DIRECTORY}/utils
 )
 
-target_link_libraries(engine_core log SDL2)
+target_link_libraries(engine_core log SDL2 resource_data)
+set_property (TARGET engine_core PROPERTY FOLDER "core")

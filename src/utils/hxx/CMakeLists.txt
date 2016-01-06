@@ -26,6 +26,14 @@ target_include_directories(callbacks
 	.
 )
 set_property (TARGET callbacks PROPERTY FOLDER "utils")
+# misc
+add_library(misc STATIC misc.hxx stub.cpp)
+set_target_properties(misc PROPERTIES LINKER_LANGUAGE CXX)
+target_include_directories(misc 
+	PUBLIC
+	.
+)
+set_property (TARGET misc PROPERTY FOLDER "utils")
 # add tests
 add_subdirectory(test)
 #${Boost_INCLUDE_DIR}
