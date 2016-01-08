@@ -1,6 +1,7 @@
 #pragma once
 #include "input_keys.h"
 #include "callbacks.hxx"
+#include "misc.hxx"
 
 #include <string>
 #include <set>
@@ -13,7 +14,9 @@ namespace The
 {
 
 
-class Window : public Emitter
+class Window
+    : public Emitter
+    , public NotCopyable
 {
 public:
     struct IInputCallback
@@ -37,11 +40,9 @@ public:
         bool        fullscreen  = false;
     };
 
-    Window() 
-    {
-        Emitter::Init<IInputCallback>();
-    }
-    ~Window() {}
+    Window();
+    ~Window();
+    Window& operator = (Window&& rvalue);
     bool Create(const Desc& desc);
     void Destroy();
     void SetDimensions(uint32_t width, uint32_t height);
@@ -53,9 +54,9 @@ private:
     static InputKey convertSdlCodeToExternal(uint32_t sdl_key);
 
     Desc m_desc;
-    bool m_opened = false;
-
     SDL_Window*     m_window;
+    
+    static bool s_single_instance_is_created; // Ensures there is only one window created
 };
 
 };
