@@ -62,7 +62,12 @@ class Unpacker:
             output_dir_changed = False
             if not config_entry or self._is_destination_cache_enabled(config_entry):
                 output_dir_changed = not os.path.exists(output_dir) or cache.entry_has_changed(output_dir)
+            if input_file_changed:
+                g_log.info("File %s has changed" % input_file);
+            if output_dir_changed:
+                g_log.info("Output directory %s has changed" % output_dir)
             return input_file_changed or output_dir_changed
+        g_log.info("Cache is not found so we need to unpack")
         return True
 
     def _unpack_file(self, input_file, output_dir):

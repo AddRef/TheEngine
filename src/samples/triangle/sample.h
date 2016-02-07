@@ -1,6 +1,7 @@
 #pragma once
 #include "engine_window.h"
 #include "engine_core.h"
+#include "scene_graph_elements.h"
 #include "resource_manager.h"
 
 class Sample 
@@ -35,5 +36,6 @@ private:
 
     The::ResourceManager m_resource_manager;
     The::EngineCore m_engine_core;
+    The::SceneGraph m_scene_graph;
     The::Scene m_scene;
 };
