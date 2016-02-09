@@ -5,10 +5,9 @@ INITIALIZE_EASYLOGGINGPP
 
 namespace The
 {
-bool EngineCore::Create(const The::Window::Desc& window_desc)
+bool EngineCore::Init(The::Window&& window)
 {
-    bool result = m_window.Create(window_desc);
-    THE_ERROR_IF(!result, "Failed to create window", return false);
+    m_window = std::move(window);
     return true;
 }
 }; //namespace The

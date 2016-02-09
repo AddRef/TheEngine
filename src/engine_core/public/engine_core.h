@@ -26,13 +26,13 @@ public:
     };
     EngineCore() {}
     ~EngineCore() {}
-    bool Create(const The::Window::Desc& window_desc);
+    bool Init(The::Window&& window);
     void SetScene(Scene* scene) { scene; }
     Window& GetWindow() { return m_window; }
 
 private:
 	ICallback* m_callback = nullptr;
-    Window  m_window;
+    Window m_window;
 };
 
 };

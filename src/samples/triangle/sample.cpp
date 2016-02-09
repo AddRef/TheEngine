@@ -137,8 +137,9 @@ bool Sample::initEngine()
     window_desc.width = 640;
     window_desc.height = 480;
     window_desc.title = "simple_window";
+    The::Window window;
 
-    m_engine_core.Create(window_desc);
+    // m_engine_core.Create(window_desc);
     m_engine_core.SetScene(&m_scene);
     return true;
 }

@@ -35,3 +35,10 @@ struct QueryEnabled
 
     ObjectType GetType() { return ObjectType(*this); }
 };
+
+struct NotCopyable
+{
+    NotCopyable() {}
+    NotCopyable& operator = (const NotCopyable&) = delete;
+    NotCopyable(const NotCopyable&) = delete;
+};

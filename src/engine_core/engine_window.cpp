@@ -8,8 +8,29 @@
 namespace The
 {
     
+bool Window::s_single_instance_is_created = false;
+
+Window::Window()
+{
+    Emitter::Init<IInputCallback>();
+}
+
+Window::~Window()
+{
+    Destroy();
+}
+
+Window& Window::operator = (Window&& rvalue)
+{
+    m_window = rvalue.m_window;
+    m_desc = rvalue.m_desc;
+    rvalue.m_window = nullptr;
+    return *this;
+}
+
 bool Window::Create(const Desc& desc)
 {
+    THE_ERROR_IF(s_single_instance_is_created, "Only one window instance could exist at the same time", return false);
     m_desc = desc;
     int result = SDL_Init(SDL_INIT_VIDEO);
     THE_ERROR_IF(result, "Failed to initialize SDL: " << SDL_GetError(), return false);
@@ -19,6 +40,7 @@ bool Window::Create(const Desc& desc)
     m_window = SDL_CreateWindow(desc.title.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, desc.width, desc.height, SDL_WINDOW_OPENGL);
     THE_ERROR_IF(!m_window, "Window creation failed: " << SDL_GetError(), return false);
     SetFullscreen(desc.fullscreen);
+    s_single_instance_is_created = true;
     return true;
 }
 
@@ -26,10 +48,13 @@ void Window::Destroy()
 {
     SDL_DestroyWindow(m_window);
     SDL_Quit();
+    m_window = nullptr;
+    s_single_instance_is_created = false;
 }
 
 void Window::SetDimensions(uint32_t width, uint32_t height)
 {
+    THE_ERROR_IF(!m_window, "Invalid window handle", return);
     m_desc.width = width;
     m_desc.height = height;
     SDL_SetWindowSize(m_window, m_desc.width, m_desc.height);
@@ -37,18 +62,21 @@ void Window::SetDimensions(uint32_t width, uint32_t height)
 
 void Window::SetFullscreen(bool fullscreen)
 {
+    THE_ERROR_IF(!m_window, "Invalid window handle", return);
     m_desc.fullscreen = fullscreen;
     SDL_SetWindowFullscreen(m_window, m_desc.fullscreen ? SDL_WINDOW_FULLSCREEN : 0);
 }
 
 void Window::SetTitle(const std::string& title)
 {
+    THE_ERROR_IF(!m_window, "Invalid window handle", return);
     m_desc.title = title;
     SDL_SetWindowTitle(m_window, m_desc.title.c_str());
 }
 
 bool Window::Process() const
 {
+    THE_ERROR_IF(!m_window, "Invalid window handle", return false);
     SDL_Event event;
     while (SDL_PollEvent(&event))
     {
