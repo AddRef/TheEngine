@@ -115,9 +115,9 @@ bool Sample::initScene()
 {
     The::CameraElement::Desc camera_desc;
 
-    camera_desc.eye_position = vector3f(8.0, 2.0, -8.0);
-    camera_desc.direction = vector3f(0.0, 0.0, 7.0) - camera_desc.eye_position;
-    camera_desc.up = vector3f(0.0, 1.0, 0.0);
+    camera_desc.eye_position = The::vector3f(8.0, 2.0, -8.0);
+    camera_desc.direction = The::vector3f(0.0, 0.0, 7.0) - camera_desc.eye_position;
+    camera_desc.up = The::vector3f(0.0, 1.0, 0.0);
 
     camera_desc.aspect = 1.0f * m_engine_core.GetWindow().GetDescription().width / m_engine_core.GetWindow().GetDescription().height;
     camera_desc.field_of_view_y = 45.0;

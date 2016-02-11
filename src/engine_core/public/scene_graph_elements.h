@@ -20,9 +20,11 @@ public:
     CameraElement(const Desc& desc);
     ~CameraElement();
     const Desc& GetDesc() const { return m_desc; }
-    virtual void Update(NodeState& state, uint64_t ts) override;
+    virtual Result Update(const NodeState& state, NodeState& out_state, uint64_t ts) override;
 private:
     Desc m_desc;
+    mat4 m_viewMatrix;
+    mat4 m_projectionMatrix;
 };
 
 class ObjectElement : public ISceneElement
@@ -30,7 +32,7 @@ class ObjectElement : public ISceneElement
 public:
     ObjectElement();
     ~ObjectElement();
-    virtual void Update(NodeState& state, uint64_t ts) override;
+    virtual Result Update(const NodeState& state, NodeState& out_state, uint64_t ts) override;
 private:
 };
 
@@ -39,7 +41,7 @@ class MovementElement : public ISceneElement
 public:
     MovementElement();
     ~MovementElement();
-    virtual void Update(NodeState& state, uint64_t ts) override;
+    virtual Result Update(const NodeState& state, NodeState& out_state, uint64_t ts) override;
 private:
 };
 }; // namespace The

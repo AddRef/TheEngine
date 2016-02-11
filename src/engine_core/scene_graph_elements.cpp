@@ -4,14 +4,19 @@ using namespace The;
 
 CameraElement::CameraElement(const Desc& desc)
     : m_desc(desc)
-{}
+{
+    m_desc.direction = glm::normalize(m_desc.direction);
+    m_viewMatrix = glm::lookAt(m_desc.eye_position, m_desc.eye_position + m_desc.direction, m_desc.up);
+    m_projectionMatrix = glm::perspective(m_desc.field_of_view_y, m_desc.aspect, m_desc.near_z, m_desc.far_z);
+}
 
 CameraElement::~CameraElement()
 {}
 
-void CameraElement::Update(NodeState& state, uint64_t ts)
+ISceneElement::Result CameraElement::Update(const NodeState& state, NodeState& out_state, uint64_t ts)
 {
-    state; ts;
+    state; out_state; ts;
+    return ISceneElement::Result::StateHasNotBeenUpdated;
 }
 
 ObjectElement::ObjectElement()
@@ -21,9 +26,10 @@ ObjectElement::~ObjectElement()
 {
 }
 
-void ObjectElement::Update(NodeState& state, uint64_t ts)
+ISceneElement::Result ObjectElement::Update(const NodeState& state, NodeState& out_state, uint64_t ts)
 {
-    state; ts;
+    state; out_state; ts;
+    return ISceneElement::Result::StateHasNotBeenUpdated;
 }
 
 MovementElement::MovementElement()
@@ -32,7 +38,8 @@ MovementElement::MovementElement()
 MovementElement::~MovementElement()
 {}
 
-void MovementElement::Update(NodeState& state, uint64_t ts)
+ISceneElement::Result MovementElement::Update(const NodeState& state, NodeState& out_state, uint64_t ts)
 {
-    state; ts;
+    state; out_state; ts;
+    return ISceneElement::Result::StateHasNotBeenUpdated;
 }
