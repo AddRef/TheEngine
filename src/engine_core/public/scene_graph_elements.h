@@ -23,8 +23,8 @@ public:
     virtual Result Update(const NodeState& state, NodeState& out_state, uint64_t ts) override;
 private:
     Desc m_desc;
-    mat4 m_viewMatrix;
-    mat4 m_projectionMatrix;
+    mat4 m_view;
+    mat4 m_projection;
 };
 
 class ObjectElement : public ISceneElement
@@ -32,16 +32,17 @@ class ObjectElement : public ISceneElement
 public:
     ObjectElement();
     ~ObjectElement();
-    virtual Result Update(const NodeState& state, NodeState& out_state, uint64_t ts) override;
 private:
 };
 
 class MovementElement : public ISceneElement
 {
 public:
-    MovementElement();
+    MovementElement(const vector3f& initial_shift);
     ~MovementElement();
     virtual Result Update(const NodeState& state, NodeState& out_state, uint64_t ts) override;
+    void Shift(const vector3f& shift);
 private:
+    vector3f m_shift;
 };
 }; // namespace The
