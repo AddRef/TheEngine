@@ -4,6 +4,7 @@
 
 #include <functional>
 #include <sstream>
+#include <cstdint>
 
 using TFunction = std::function<void(const std::string& str)>;
 

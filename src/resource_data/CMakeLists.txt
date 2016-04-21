@@ -15,5 +15,5 @@ target_include_directories(resource_data
     ${ROOT_DIRECTORY}/utils
 )
 
-target_link_libraries(resource_data log tinyobjloader)
+target_link_libraries(resource_data hxx_utils tinyobjloader)
 set_property (TARGET resource_data PROPERTY FOLDER "core")

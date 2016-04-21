@@ -93,27 +93,25 @@ bool Sample::loadResources()
 {
     std::string mesh_path = "";
     std::string shader_path = "";
-    The::MeshData mesh_data;
-    The::ShaderData shader_data;
     // Fill mesh data
     The::MeshData::Shape mesh_shape;
     mesh_shape.Positions.Data.assign(g_triangle_data, g_triangle_data + sizeof(g_triangle_data));
     mesh_shape.LayoutType = The::MeshData::LayoutType::Triangle;
-    mesh_data.AddShape(std::move(mesh_shape));
+    m_mesh_data.AddShape(std::move(mesh_shape));
+    // Create object
+    m_scene_object = std::make_unique<The::SceneObject>(&m_mesh_data);
     // Load shader
-    if (!shader_data.Load(shader_path))
+    if (!m_shader_data.Load(shader_path))
     {
         THE_ERROR("Failed to load shader " << shader_path << std::endl, return false);
     }
 
-    m_resource_manager.CreateShader(shader_data);
-    m_resource_manager.CreateMesh(mesh_data);
     return true;
 }
 
 bool Sample::initScene()
 {
-    The::CameraElement::Desc camera_desc;
+    The::Camera::Desc camera_desc;
 
     camera_desc.eye_position = The::vector3f(8.0, 2.0, -8.0);
     camera_desc.direction = The::vector3f(0.0, 0.0, 7.0) - camera_desc.eye_position;
@@ -124,9 +122,9 @@ bool Sample::initScene()
     camera_desc.near_z = 0.1f;
     camera_desc.far_z = 100.0f;
 
-    The::CameraElement camera(camera_desc);
-    The::SceneGraph::Node camera_node = m_scene_graph.Add(m_scene_graph.GetRoot(), camera);
-    camera_node;
+    The::Camera camera(camera_desc);
+    m_scene.SetCamera(&camera);
+    m_scene.AddElement(m_scene_object.get());
     return true;
 }
 
