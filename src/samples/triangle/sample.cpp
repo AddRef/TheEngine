@@ -1,9 +1,10 @@
 #include "sample.h"
 
-#include "engine_core.h"
+#include "core/engine_core.h"
+#include "resource_data/resource_data.h"
+
 #include "log.hxx"
 #include "math.h"
-#include "resource_data.h"
 
 const float g_triangle_data[] = 
 {
@@ -14,7 +15,6 @@ const float g_triangle_data[] =
 
 // @public
 Sample::Sample()
-    : m_resource_manager(m_engine_core)
 {
 }
 
@@ -124,7 +124,7 @@ bool Sample::initScene()
 
     The::Camera camera(camera_desc);
     m_scene.SetCamera(&camera);
-    m_scene.AddElement(m_scene_object.get());
+    m_scene.AddElement(*m_scene_object);
     return true;
 }
 

@@ -1,7 +1,7 @@
 #pragma once
-#include "engine_window.h"
-#include "engine_core.h"
-#include "resource_manager.h"
+#include "core/engine_window.h"
+#include "core/engine_core.h"
+#include "resource_data/resource_data.h"
 
 class Sample 
     : public Receiver<The::Window::IInputCallback>
@@ -33,7 +33,6 @@ private:
     bool initScene();
     bool initEngine();
 
-    The::ResourceManager m_resource_manager;
     The::EngineCore m_engine_core;
     The::Scene m_scene;
 

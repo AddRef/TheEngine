@@ -1,10 +1,8 @@
-#include "log.hxx"
-#include "engine_core.h"
-
-INITIALIZE_EASYLOGGINGPP
+#include "scene.h"
 
 namespace The
 {
+
 ////////////////////////////////////////////////////////////////////////////
 // Camera
 Camera::Camera(const Desc& desc)
@@ -38,6 +36,13 @@ void SceneObject::Update(uint64_t time)
     time;
 }
 
+void SceneObject::Render(IRenderer& renderer, const Camera& camera)
+{
+    renderer;
+    camera;
+}
+
+
 
 ////////////////////////////////////////////////////////////////////////////
 // Scene
@@ -52,17 +57,16 @@ void Scene::SetCamera(Camera* camera)
     m_camera = camera;
 }
 
-void Scene::AddElement(ISceneElement* element)
+void Scene::AddElement(ISceneElement& element)
 {
-    if (element)
-        m_scene_elements.insert(element);
+    m_scene_elements.insert(&element);
 }
 
-void Scene::RemoveElement(ISceneElement* element)
+void Scene::RemoveElement(ISceneElement& element)
 {
     if (!m_scene_elements.empty())
     {
-        m_scene_elements.erase(element);
+        m_scene_elements.erase(&element);
     }
 }
 
@@ -71,11 +75,9 @@ void Scene::Update(uint64_t time)
     time;
 }
 
-////////////////////////////////////////////////////////////////////////////
-// EngineCore
-bool EngineCore::Init(The::Window&& window)
+void Scene::Render(IRenderer& renderer)
 {
-    m_window = std::move(window);
-    return true;
+    renderer;
 }
-}; //namespace The
+
+};
