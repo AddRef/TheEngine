@@ -32,7 +32,6 @@ bool Sample::Init()
 
 void Sample::Run()
 {
-
 }
 
 // @protected

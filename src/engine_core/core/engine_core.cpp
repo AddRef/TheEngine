@@ -8,8 +8,9 @@ namespace The
 
 ////////////////////////////////////////////////////////////////////////////
 // EngineCore
-bool EngineCore::Init(The::Window&& window)
+bool EngineCore::Init(Api api)
 {
+    api;
     m_window = std::move(window);
     return true;
 }

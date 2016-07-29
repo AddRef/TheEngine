@@ -15,9 +15,19 @@ public:
     {
         virtual void OnUpdate() = 0;
     };
+    enum class Api
+    {
+        OGL
+    };
+    struct Config
+    {
+        Window::Desc window_desc;
+        Api api;
+    };
+
     EngineCore() {}
     ~EngineCore() {}
-    bool Init(The::Window&& window);
+    bool Init(Config config);
     void SetScene(Scene* scene) { scene; }
     Window& GetWindow() { return m_window; }
 
