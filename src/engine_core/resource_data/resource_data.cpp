@@ -12,9 +12,8 @@ TextureData::~TextureData()
 {
 
 }
-bool TextureData::Load(const std::string& path)
+bool TextureData::Load(const std::string& /*path*/)
 {
-    path;
     return false;
 }
 
@@ -59,9 +58,8 @@ ShaderData::~ShaderData()
 
 }
 
-bool ShaderData::Load(const std::string& path)
+bool ShaderData::Load(const std::string& /*path*/)
 {
-    path;
-    return false;
+   return false;
 }
 };

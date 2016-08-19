@@ -18,7 +18,7 @@ if (SDL_STATIC)
 	target_include_directories(SDL2-static PUBLIC ${3RDPARTY_UNPACK_DIR}/SDL2/include)
 endif()
 
-set_target_properties(gtest PROPERTIES COMPILE_FLAGS -DGTEST_HAS_TR1_TUPLE=0)
+target_compile_definitions(gtest PUBLIC GTEST_HAS_TR1_TUPLE=0 GTEST_USE_OWN_TR1_TUPLE=0)
 target_include_directories(SDL2 PUBLIC ${3RDPARTY_UNPACK_DIR}/SDL2/include)
 target_include_directories(tinyobjloader PUBLIC ${3RDPARTY_UNPACK_DIR}/tinyobjloader)
 

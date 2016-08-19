@@ -2,8 +2,6 @@
 #include "log.hxx"
 
 #include "SDL.h"
-#include "SDL_opengles2.h"
-#include "SDL_egl.h"
 
 namespace The
 {

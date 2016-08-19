@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <list>
+#include <stdexcept>
 
 template <typename TCallback>
 class Receiver : public TCallback
@@ -39,18 +40,17 @@ class Emitter
     class Holder : public IHolder
     {
     public:
-        typedef TCallback TCallback;
         virtual ~Holder() {}
         virtual void AddCallback(Receiver<TCallback>& receiver)
         {
-            Receiver<TCallback>::Ptr ptr = receiver._getPtr();
+            typename Receiver<TCallback>::Ptr ptr = receiver._getPtr();
             m_callbacks.push_back(ptr);
         }
         virtual void RemoveCallback(Receiver<TCallback>& receiver)
         {
             for (auto iter = m_callbacks.begin(); iter != m_callbacks.end(); ++iter)
             {
-                Receiver<TCallback>::Ptr ptr = iter->lock();
+                typename Receiver<TCallback>::Ptr ptr = iter->lock();
                 if (ptr == receiver._getPtr())
                 {
                     iter = m_callbacks.erase(iter);
@@ -62,7 +62,7 @@ class Emitter
             std::list<TCallback*> callbacks;
             for (auto iter = m_callbacks.begin(); iter != m_callbacks.end();)
             {
-                Receiver<TCallback>::Ptr callback = iter->lock();
+                typename Receiver<TCallback>::Ptr callback = iter->lock();
                 if (callback)
                 {
                     callbacks.push_back(*callback.get());

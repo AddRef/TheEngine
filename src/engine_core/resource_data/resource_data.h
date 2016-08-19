@@ -46,10 +46,13 @@ public:
     {
         std::vector<Type>   Data;
         uint32_t            ElementSize;
-        ElementDesc& operator = (ElementDesc&& rvalue)
+
+        template <typename TElementDesc=ElementDesc>
+        ElementDesc& operator = (TElementDesc&& rvalue)
         {
-            Data = std::move(rvalue.Data);
+            Data = std::forward(rvalue.Data);
             ElementSize = rvalue.ElementSize;
+            return *this;
         }
     };
 
@@ -60,13 +63,16 @@ public:
         ElementDesc<float>      Normals;
         ElementDesc<uint32_t>   Indices;
         LayoutType              LayoutType;
-        Shape& operator = (Shape&& shape)
+
+        template <typename TShape = Shape>
+        Shape& operator = (TShape&& shape)
         {
-            Positions = std::move(shape.Positions);
-            TexCoords = std::move(shape.TexCoords);
-            Normals = std::move(shape.Normals);
-            Indices = std::move(shape.Indices);
-            LayoutType = std::move(shape.LayoutType);
+            Positions = std::forward(shape.Positions);
+            TexCoords = std::forward(shape.TexCoords);
+            Normals = std::forward(shape.Normals);
+            Indices = std::forward(shape.Indices);
+            LayoutType = std::forward(shape.LayoutType);
+            return *this;
         }
     };
     // ResourceData

@@ -17,7 +17,7 @@ endif()
 set (BOOST_DIR ${3RDPARTY_UNPACK_DIR}/boost)
 
 # Unpack 3rd party
-if (NOT WIN32 OR ${MSVC_VERSION} EQUAL 1800)
+if (NOT WIN32 OR ${MSVC_VERSION} AND ${MSVC_VERSION} EQUAL 1800)
     set (BOOST_ADDITIONAL_BUILD_ARGUMENTS -a toolset=msvc-12.0) # support VS2013 for now only on Windows
 endif()
 

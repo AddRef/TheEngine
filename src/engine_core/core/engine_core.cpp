@@ -8,10 +8,10 @@ namespace The
 
 ////////////////////////////////////////////////////////////////////////////
 // EngineCore
-bool EngineCore::Init(Api api)
+bool EngineCore::Init(Config config)
 {
-    api;
-    m_window = std::move(window);
+    m_config = config;
+    m_window.Create(config.window_desc);
     return true;
 }
 }; //namespace The

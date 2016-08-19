@@ -21,15 +21,15 @@ class Window
 public:
     struct IInputCallback
     {
-        virtual void OnKeyDown(InputKey key) { key; }
-        virtual void OnKeyUp(InputKey key) { key; }
-        virtual void OnMouseDown(InputKey key, uint32_t x, uint32_t y) { key; x; y; }
-        virtual void OnMouseUp(InputKey key, uint32_t  x, uint32_t  y) { key; x; y; }
-        virtual void OnMouseMove(uint32_t x, uint32_t y) { x; y; }
-        virtual void OnFingerDown(float x, float y, float dx, float dy) { x; y; dx; dy; }
-        virtual void OnFingerUp(float x, float y, float dx, float dy) { x; y; dx; dy; }
-        virtual void OnFingerMove(float x, float y, float dx, float dy) { x; y; dx; dy; }
-        virtual void OnMultiGesture(uint16_t numfingers, float x, float y, float theta, float dist) { numfingers; x; y; theta; dist; }
+        virtual void OnKeyDown(InputKey) {}
+        virtual void OnKeyUp(InputKey) {}
+        virtual void OnMouseDown(InputKey, uint32_t, uint32_t) {}
+        virtual void OnMouseUp(InputKey, uint32_t, uint32_t) {}
+        virtual void OnMouseMove(uint32_t, uint32_t) {}
+        virtual void OnFingerDown(float, float, float, float) {}
+        virtual void OnFingerUp(float, float, float, float) {}
+        virtual void OnFingerMove(float, float, float, float) {}
+        virtual void OnMultiGesture(uint16_t, float, float, float, float) {}
     };
 
     struct Desc

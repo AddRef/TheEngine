@@ -6,6 +6,8 @@
 #include "log.hxx"
 #include "math.h"
 
+#include <memory>
+
 const float g_triangle_data[] = 
 {
     -1.0f, -1.0f, 0.0f,
@@ -36,55 +38,45 @@ void Sample::Run()
 
 // @protected
 // The::Window::ICallback
-void Sample::OnKeyDown(InputKey key)
+void Sample::OnKeyDown(InputKey /*key*/)
 {
-    key;
 }
 
-void Sample::OnKeyUp(InputKey key)
+void Sample::OnKeyUp(InputKey /*key*/)
 {
-    key;
 }
 
-void Sample::OnMouseDown(InputKey key, uint32_t x, uint32_t y)
+void Sample::OnMouseDown(InputKey /*key*/, uint32_t /*x*/, uint32_t /*y*/)
 {
-    key; x; y;
 }
 
-void Sample::OnMouseUp(InputKey key, uint32_t  x, uint32_t  y)
+void Sample::OnMouseUp(InputKey /*key*/, uint32_t  /*x*/, uint32_t  /*y*/)
 {
-    key; x; y;
 }
 
-void Sample::OnMouseMove(uint32_t x, uint32_t y)
+void Sample::OnMouseMove(uint32_t /*x*/, uint32_t /*y*/)
 {
-    x; y;
 }
 
-void Sample::OnFingerDown(float x, float y, float dx, float dy)
+void Sample::OnFingerDown(float /*x*/, float /*y*/, float /*dx*/, float /*dy*/)
 {
-    x; y; dx; dy;
 }
 
-void Sample::OnFingerUp(float x, float y, float dx, float dy)
+void Sample::OnFingerUp(float /*x*/, float /*y*/, float /*dx*/, float /*dy*/)
 {
-    x; y; dx; dy;
 }
 
-void Sample::OnFingerMove(float x, float y, float dx, float dy)
+void Sample::OnFingerMove(float /*x*/, float /*y*/, float /*dx*/, float /*dy*/)
 {
-    x; y; dx; dy;
 }
 
-void Sample::OnMultiGesture(uint16_t numfingers, float x, float y, float theta, float dist)
+void Sample::OnMultiGesture(uint16_t /*numfingers*/, float /*x*/, float /*y*/, float /*theta*/, float /*dist*/)
 {
-    numfingers; x; y; theta; dist;
 }
 
 // The::Engine::ICallback
 void Sample::OnUpdate()
 {
-
 }
 
 // @private
@@ -98,7 +90,7 @@ bool Sample::loadResources()
     mesh_shape.LayoutType = The::MeshData::LayoutType::Triangle;
     m_mesh_data.AddShape(std::move(mesh_shape));
     // Create object
-    m_scene_object = std::make_unique<The::SceneObject>(&m_mesh_data);
+    m_scene_object.reset(new The::SceneObject(&m_mesh_data));
     // Load shader
     if (!m_shader_data.Load(shader_path))
     {

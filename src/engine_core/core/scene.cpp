@@ -16,9 +16,8 @@ Camera::Camera(const Desc& desc)
 Camera::~Camera()
 {}
 
-void Camera::Update(uint64_t time)
+void Camera::Update(uint64_t /*time*/)
 {
-    time;
 }
 
 const Camera::Desc& Camera::GetDesc() const
@@ -31,15 +30,12 @@ const Camera::Desc& Camera::GetDesc() const
 SceneObject::SceneObject(const MeshData* mesh)
     : m_mesh(mesh) {}
 
-void SceneObject::Update(uint64_t time)
+void SceneObject::Update(uint64_t /*time*/)
 {
-    time;
 }
 
-void SceneObject::Render(IRenderer& renderer, const Camera& camera)
+void SceneObject::Render(IRenderer& /*renderer*/, const Camera& /*camera*/)
 {
-    renderer;
-    camera;
 }
 
 
@@ -70,14 +66,12 @@ void Scene::RemoveElement(ISceneElement& element)
     }
 }
 
-void Scene::Update(uint64_t time)
+void Scene::Update(uint64_t /*time*/)
 {
-    time;
 }
 
-void Scene::Render(IRenderer& renderer)
+void Scene::Render(IRenderer& /*renderer*/)
 {
-    renderer;
 }
 
 };

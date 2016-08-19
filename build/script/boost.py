@@ -28,8 +28,8 @@ class Boost:
             sys.exit(0)
 
     def __del__(self):
-        if self._remove_boost:
-            g_log.debug("Removing location: self._boost_path")
+        if self._remove_boost and self._boost_path != None:
+            g_log.debug("Removing location: %s" % self._boost_path)
             shutil.rmtree(self._boost_path, ignore_errors=True)
 
     def build(self, build_arguments):

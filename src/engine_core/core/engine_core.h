@@ -28,11 +28,12 @@ public:
     EngineCore() {}
     ~EngineCore() {}
     bool Init(Config config);
-    void SetScene(Scene* scene) { scene; }
+    void SetScene(Scene* /*scene*/) {}
     Window& GetWindow() { return m_window; }
 
 private:
 	ICallback* m_callback = nullptr;
+    Config m_config;
     Window m_window;
 };
 
