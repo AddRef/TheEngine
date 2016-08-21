@@ -4,6 +4,10 @@ language: cpp
 compiler:
     - clang
     - gcc
+addons:
+    apt:
+        sources: ['kalakris-cmake']
+        packages: ['cmake']
 # Build steps
 script:
     - mkdir _build
