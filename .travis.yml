@@ -6,6 +6,6 @@ compiler:
     - gcc
 # Build steps
 script:
-    - mkdir build
-    - cd build
+    - mkdir _build
+    - cd _build
     - cmake .. && make
