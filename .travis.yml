@@ -4,7 +4,7 @@ language: cpp
 compiler:
     gcc
 
-before_install:
+before_script:
     if ( test "`uname -s`" = "Darwin" )
     then
       #cmake v2.8.12 is installed on the Mac workers now
